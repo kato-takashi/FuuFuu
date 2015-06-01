@@ -54,6 +54,8 @@ $(function() {
                 return false;
             }
         });
+
+        
     });
     //インジェクション対策
     function escapeHTML(val) {

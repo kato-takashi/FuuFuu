@@ -183,3 +183,13 @@ textarea {
 .container .postarea .postarea-share .postarea-share-button a:hover,.container .postarea .postarea-button:hover {
   background:#E6E6E6;
 }
+/* ///// */
+.sublogo{
+  text-align:center;
+  margin:0 auto;
+}
+
+#windPower {
+  font-size: 60px;
+  color: #000000;
+}

@@ -17,12 +17,15 @@
 <body>
     <div class="header">
         <h1 class="logo">FuuFuu</h1>
-        <H2 class="sublogo">windPower: <span id="windPower">76</span></H2>
+        <H2 class="sublogo">windPower: <span id="windPower">0</span></H2>
+        <H2 class="sublogo">time: 残り<span id="myTimer">10</span>秒</H2>
+          <h3>リアルタイム格納バージョン</h3><P>※無料プランが200,000リクエストのため問題あり/ すぐいっぱいになってまう</P>
           <button name="button" id="startWind">start Wind!</button>
             <button name="button" id="stopWind">stop Wind!</button>
-
-        
-
+            <hr>
+            <h3>配列格納バージョン</h3><P>※タイムラグがあるが，データを圧縮するため配列に格納</P>
+            <button name="button" id="startRecord">start Record!</button>
+            <button name="button" id="stopRecord">stop Record!</button>
     </div>
 
     <div class="container">

@@ -135,6 +135,7 @@ textarea {
 .container .postarea .postarea-button {
   font-weight:700;
   margin-top:.6em;
+  margin-bottom:.6em;
   font-size:1em;
   height:3.85em;
   background:#f7f7f7;
@@ -192,4 +193,8 @@ textarea {
 #windPower {
   font-size: 60px;
   color: #000000;
+}
+#myTimer{
+ font-size: 40px;
+  color: #dddddd; 
 }

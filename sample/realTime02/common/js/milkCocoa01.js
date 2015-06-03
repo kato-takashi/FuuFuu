@@ -34,7 +34,7 @@ $(function() {
         })
 
         function getSortData(sortStr){
-
+            //HTMLをリセット
             resetHTML();
             var sortArrNum = 0;
             //"message"データストアからtitleを検索した文字でメッセージを取ってくる
@@ -43,7 +43,10 @@ $(function() {
                 // console.log(datas);
                 datas.forEach(function(data) {
                     // console.log(data.value.title);
-                    if(data.value.title == sortStr){
+                    // if(data.value.title == sortStr){
+                    // 正規表現によりsortStrが含まれているかを判定
+                    var re = new RegExp(sortStr, "i");
+                    if(data.value.title.match(re)){
                         sortDataArr.push(data);   
                         // console.log(sortDataArr);
                         // console.log('配列数'+sortDataArr.length);

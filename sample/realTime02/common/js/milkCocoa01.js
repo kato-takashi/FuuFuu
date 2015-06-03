@@ -8,26 +8,65 @@ $(function() {
         var windPower = document.getElementById('windPower');
         var windInterval, recordInterval;
         var windPowerArr = [];
-        var chatTitle = "chat"
-        var chatText = $("#content").val();
         var iteraterNum = 0;
         var recordTimerNum = 10;
+        var sortDataArr = [];
 
-        //3."message"データストアからメッセージを取ってくる
-        ds.stream().sort("desc").next(function(err, datas) {
-            datas.forEach(function(data) {
-                renderMessage(data.value);
-                console.log(data);
-                // console.log(data.value);
-                // console.log(data.value.content);
-            });
-        });
+        function getAllDate(){
+            resetHTML();
+            //3."message"データストアからメッセージを取ってくる
+            ds.stream().sort("desc").next(function(err, datas) {
+                console.log('data.lengths'+ datas.length);
+                // console.log(datas);
+                datas.forEach(function(data) {
+                    renderMessage(data.value);
+                    console.log(data.value.title);
+                    // console.log(data);
+                    // console.log(data.value);
+                    // console.log(data.value.content);
+                });
+            });    
+        }
+
+        $('#getAllDateBtn').click(function () {
+            getAllDate();
+        })
+
+        function getSortData(sortStr){
+            resetHTML();
+            var sortArrNum = 0;
+            //"message"データストアからtitleを検索した文字でメッセージを取ってくる
+            ds.stream().sort("desc").next(function(err, datas) {
+                console.log('data.lengths'+ datas.length);
+                // console.log(datas);
+                datas.forEach(function(data) {
+                    // console.log(data.value.title);
+                    if(data.value.title == sortStr){
+                        sortDataArr.push(data);   
+                        // console.log(sortDataArr);
+                        // console.log('配列数'+sortDataArr.length);
+                        // console.log('sortArrNum '+sortArrNum);
+                        // console.log(sortDataArr[sortArrNum].value);
+                        renderMessage(sortDataArr[sortArrNum].value);
+                        sortArrNum++ ;
+                    }
+                });
+            });  
+        }
+
+        $('#getSortDataBtn').click(function () {
+            console.log('search');
+            sortDataArr = [];
+            // var searchStr = 'リアルタイム　風の強さ';
+            var searchStr = $('#searchText').val();
+            getSortData(searchStr);
+        })
 
         //4."message"データストアのプッシュイベントを監視
         ds.on("push", function(e) {
             renderMessage(e.value);
         });
-
+        //html表示メッセージの最後の行
         var last_message = "dummy";
 
         //データの読み込み
@@ -41,9 +80,23 @@ $(function() {
             last_message = message.id;
         }
 
+        //すべてを消去
+        function resetHTML(){
+            $(".post").remove();
+            //html表示メッセージの最後の行を初期化
+            last_message = "dummy";
+            console.log('reset');
+        }
+        $('#resetAll').click(function(){
+            resetHTML();
+        });
+
+
         function post(titleStr, contentStr) {
             var titleStr = titleStr || 'タイトルなし'
             //5."message"データストアにメッセージをプッシュする
+            console.log('milkcocoa push')
+
             var content = escapeHTML(contentStr);
             if (content && content !== "") {
                 ds.push({
@@ -56,7 +109,10 @@ $(function() {
         }
 
         $('#post').click(function () {
+            var chatTitle = "chat"
+            var chatText = $("#content").val();
             post(chatTitle, chatText);
+            console.log('chat push'+chatText);
         })
         $('#content').keydown(function (e) {
             if (e.which == 13){

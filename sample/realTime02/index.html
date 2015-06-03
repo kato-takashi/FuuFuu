@@ -19,11 +19,11 @@
         <h1 class="logo">FuuFuu</h1>
         <H2 class="sublogo">windPower: <span id="windPower">0</span></H2>
         <H2 class="sublogo">time: 残り<span id="myTimer">10</span>秒</H2>
-          <h3>リアルタイム格納バージョン</h3><P>※無料プランが200,000リクエストのため問題あり/ すぐいっぱいになってまう</P>
+          <h3>リアルタイム格納バージョン<span class='memo'>※milkcocoaの無料プランが200,000リクエストのため問題あり/ すぐいっぱいになってまう</span></h3>
           <button name="button" id="startWind">start Wind!</button>
             <button name="button" id="stopWind">stop Wind!</button>
             <hr>
-            <h3>配列格納バージョン</h3><P>※タイムラグがあるが，データを圧縮するため配列に格納</P>
+            <h3>配列格納バージョン<span class='memo'>※タイムラグがあるが，データを圧縮するため配列に格納</span></h3>
             <button name="button" id="startRecord">start Record!</button>
             <button name="button" id="stopRecord">stop Record!</button>
     </div>
@@ -36,6 +36,14 @@
             </div>
 
             <button id="post" class="postarea-button">投稿する</button>
+
+            <div class="postarea-text">
+                <textarea name="" id="searchText" cols="30" rows="10" placeholder="検索titleを入力"></textarea>
+            </div>
+            <button id="getAllDateBtn" class="">すべてのデータを表示</button>
+            <button id="resetAll" class="">すべてを消去</button>
+            <button id="getSortDataBtn" class="">検索</button>
+
         </div>
     </div>
 

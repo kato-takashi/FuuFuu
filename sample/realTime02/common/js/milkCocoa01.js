@@ -33,11 +33,12 @@ $(function() {
         })
 
         function getSortData(sortStr){
+
             resetHTML();
             var sortArrNum = 0;
             //"message"データストアからtitleを検索した文字でメッセージを取ってくる
             ds.stream().sort("desc").next(function(err, datas) {
-                console.log('data.lengths'+ datas.length);
+                // console.log('data.lengths'+ datas.length);
                 // console.log(datas);
                 datas.forEach(function(data) {
                     // console.log(data.value.title);
@@ -51,7 +52,13 @@ $(function() {
                         sortArrNum++ ;
                     }
                 });
-            });  
+                if(sortDataArr.length == 0){
+                    console.log('そんなのないみたい。');
+                    alert('そんなのないみたい。')
+                }
+            });
+
+
         }
 
         $('#getSortDataBtn').click(function () {

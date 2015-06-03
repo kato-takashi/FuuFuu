@@ -11,6 +11,7 @@ $(function() {
         var iteraterNum = 0;
         var recordTimerNum = 10;
         var sortDataArr = [];
+        var setTitleStr = '';
 
         function getAllDate(){
             resetHTML();
@@ -113,20 +114,38 @@ $(function() {
                 }, function (e) {});
             }
             $("#content").val("");
+            setTitleStr = '';
         }
 
-        $('#post').click(function () {
-            var chatTitle = "chat"
-            var chatText = $("#content").val();
-            post(chatTitle, chatText);
-            console.log('chat push'+chatText);
+        // $('#post').click(function () {
+        //     var chatTitle = "chat"
+        //     var chatText = $("#content").val();
+        //     post(chatTitle, chatText);
+        //     console.log('chat push'+chatText);
+        // })
+        // $('#content').keydown(function (e) {
+        //     if (e.which == 13){
+        //         post(chatTitle, chatText);
+        //         return false;
+        //     }
+        // });
+        /////////タイトルを決定
+        $('#titlePostBtn').click(function () {
+            setTitle();
         })
         $('#content').keydown(function (e) {
             if (e.which == 13){
-                post(chatTitle, chatText);
+                setTitle();                
                 return false;
             }
         });
+
+        function setTitle(){
+            setTitleStr = '';
+            setTitleStr = $("#content").val();
+            $('#postedTitle').text(setTitleStr);
+            $("#content").val("");
+        }
         /////////風の値のダミー
         function randNum(){
           var randNum = Math.floor( Math.random() * 100 );
@@ -141,7 +160,7 @@ $(function() {
           console.log(randNum);
           // windPower.innerHTML = randNum;
           $("#windPower").text(randNum);
-          post('リアルタイム　風の強さ', randNum);     
+          post(setTitleStr, randNum);     
         }
 
         ////wind　event
@@ -157,7 +176,7 @@ $(function() {
             stopWind();
             $("#myTimer").text('10');
         })
-
+        //リアルタイムにmilkCocoaへpost
         function startWind(){
           windInterval = setInterval(randNum,100);
         }
@@ -167,7 +186,7 @@ $(function() {
           console.log('stop');
         }
 
-        ///Record event
+        ///Record event　配列に格納してmilkCocoaにpost
         $('#startRecord').click(function () {
             startRecord();
         })
@@ -185,11 +204,11 @@ $(function() {
           clearInterval(recordInterval);
           console.log('stop record');
           stopWind();
-          post('配列格納　風の強さ', windPowerArr);
+          post(setTitleStr, windPowerArr);
           //ストップした時に配列の初期化
           windPowerArr = [];
         }
-
+        //配列に格納してmilkCocoaにpostする際のストップウォッチ
         function recordTimer(){
             recordTimerNum--;
             if(recordTimerNum < 0){

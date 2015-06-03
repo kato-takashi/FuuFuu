@@ -16,7 +16,7 @@
 
 <body>
     <div class="header">
-        <h1 class="logo">FuuFuu</h1>
+        <h1 class="logo"><span id="postedTitle"></span>FuuFuu</h1>
         <H2 class="sublogo">windPower: <span id="windPower">0</span></H2>
         <H2 class="sublogo">time: 残り<span id="myTimer">10</span>秒</H2>
           <h3>リアルタイム格納バージョン<span class='memo'>※milkcocoaの無料プランが200,000リクエストのため問題あり/ すぐいっぱいになってまう</span></h3>
@@ -31,14 +31,17 @@
     <div class="container">
         <div class="postarea cf">
 
-            <div class="postarea-text">
+            <!-- <div class="postarea-text">
                 <textarea name="" id="content" cols="30" rows="10" placeholder="Enterで投稿"></textarea>
+            </div> -->
+            <div class="postarea-text">
+                <textarea name="" id="content" cols="30" rows="10" placeholder="あなたのフーフーの名前を入力"></textarea>
             </div>
 
-            <button id="post" class="postarea-button">投稿する</button>
+            <button id="titlePostBtn" class="postarea-button">titleを決定</button>
 
             <div class="postarea-text">
-                <textarea name="" id="searchText" cols="30" rows="10" placeholder="検索titleを入力"></textarea>
+                <textarea name="" id="searchText" cols="30" rows="10" placeholder="誰かのフーフーを検索"></textarea>
             </div>
             <button id="getAllDateBtn" class="">すべてのデータを表示</button>
             <button id="resetAll" class="">すべてを消去</button>

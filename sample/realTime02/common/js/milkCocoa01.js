@@ -64,7 +64,7 @@ $(function() {
 
 
         }
-
+        //検索ボタンが押されたら
         $('#getSortDataBtn').click(function () {
             console.log('search');
             sortDataArr = [];
@@ -102,7 +102,7 @@ $(function() {
             resetHTML();
         });
 
-
+        //milkcocoaデータストアにプッシュ　引数1タイトル、引数2コンテンツ（風量）
         function post(titleStr, contentStr) {
             var titleStr = titleStr || 'タイトルなし'
             //5."message"データストアにメッセージをプッシュする

@@ -104,7 +104,7 @@ $(function() {
 
         //milkcocoaデータストアにプッシュ　引数1タイトル、引数2コンテンツ（風量）
         function post(titleStr, contentStr) {
-            var titleStr = titleStr || 'タイトルなし'
+            var titleStr = escapeHTML(titleStr) || 'タイトルなし'
             //5."message"データストアにメッセージをプッシュする
             console.log('milkcocoa push')
 

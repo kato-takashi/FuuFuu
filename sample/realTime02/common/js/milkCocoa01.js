@@ -27,10 +27,10 @@ $(function() {
 
         function getAllDate(){
             resetHTML();
-            //3."message"データストアからメッセージを取ってくる
+            //3."message"データストアからメッセージを取ってくる　//初期配列より　データ読み込みが増えるため
             ds.stream().sort("desc").next(function(err, datas) {
                 console.log('data.lengths'+ datas.length);
-                // console.log(datas);
+                console.log(datas);
                 datas.forEach(function(data) {
                     renderMessage(data.value);
                     console.log(data.value.title);
@@ -107,9 +107,7 @@ $(function() {
             $('#windId' + message.id).click(function () {
                 alert ('出力；'+ escapeHTML(message.content) );
             })
-        }
-        
-        
+        }                
 
         //すべてを消去
         function resetHTML(){

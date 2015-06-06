@@ -3,7 +3,7 @@ $(function() {
         var milkcocoa = new MilkCocoa("maxiac8gg9b.mlkcca.com");
 
         //2."message"データストアを作成
-        var ds = milkcocoa.dataStore("message");
+        var ds = milkcocoa.dataStore("windData");
 
         var windPower = document.getElementById('windPower');
         var windInterval, recordInterval;
@@ -12,6 +12,18 @@ $(function() {
         var recordTimerNum = 10;
         var sortDataArr = [];
         var setTitleStr = '';
+        var primaryId;
+        var dataCountNum = 0;
+        var dsAllData =[];
+
+        ds.stream().sort("desc").next(function(err, datas) {
+                console.log('data.lengths'+ datas.length);
+                primaryId = datas.length;
+                // console.log(datas);
+                datas.forEach(function(data) {
+                    dsAllData.push(data.value);
+                });
+            });
 
         function getAllDate(){
             resetHTML();
@@ -84,12 +96,20 @@ $(function() {
         function renderMessage(message) {
             var message_html = '<p class="post-text">' + escapeHTML(message.content) + '</p>';
             var date_html = '';
+            var button_html = '<button class="windOutPutBtn" id = "windId' + message.id +'">OutPut</button>';
             if(message.date) {
-                date_html = '<p class="post-date">'+escapeHTML(message.title)+' : '+escapeHTML( new Date(message.date).toLocaleString())+'</p>';
+                date_html = '<p class="post-date">'+'id: ' +escapeHTML(message.id) + ' ' + escapeHTML(message.title)+' : '+escapeHTML( new Date(message.date).toLocaleString())+'</p>';
             }
-            $("#"+last_message).before('<div id="'+message.id+'" class="post">'+message_html + date_html +'</div>');
+            $("#"+last_message).before('<div id="'+message.id+'" class="post">'+ button_html + message_html + date_html +'</div>');
             last_message = message.id;
+            
+            /////出力
+            $('#windId' + message.id).click(function () {
+                alert ('出力；'+ escapeHTML(message.content) );
+            })
         }
+        
+        
 
         //すべてを消去
         function resetHTML(){
@@ -109,8 +129,11 @@ $(function() {
             console.log('milkcocoa push')
 
             var content = escapeHTML(contentStr);
-            if (content && content !== "") {
+            
+            if (content && content !== "") { 
+                primaryId++;
                 ds.push({
+                    id:primaryId,
                     title: titleStr,
                     content: content,
                     date: new Date().getTime()
@@ -118,6 +141,7 @@ $(function() {
             }
             $("#content").val("");
             setTitleStr = '';
+            
         }
 
         // $('#post').click(function () {
@@ -226,3 +250,4 @@ $(function() {
     function escapeHTML(val) {
         return $('<div>').text(val).html();
     };
+

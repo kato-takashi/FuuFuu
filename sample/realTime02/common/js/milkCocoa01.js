@@ -16,7 +16,7 @@ $(function() {
         var dataCountNum = 0;
         var dsAllData =[];
 
-        ds.stream().sort("desc").next(function(err, datas) {
+        ds.stream().sort("desc").size(999).next(function(err, datas) {
                 console.log('data.lengths'+ datas.length);
                 primaryId = datas.length;
                 // console.log(datas);
@@ -28,7 +28,7 @@ $(function() {
         function getAllDate(){
             resetHTML();
             //3."message"データストアからメッセージを取ってくる　//初期配列より　データ読み込みが増えるため
-            ds.stream().sort("desc").next(function(err, datas) {
+            ds.stream().sort("desc").size(999).next(function(err, datas) {
                 console.log('data.lengths'+ datas.length);
                 console.log(datas);
                 datas.forEach(function(data) {
@@ -50,7 +50,7 @@ $(function() {
             resetHTML();
             var sortArrNum = 0;
             //"message"データストアからtitleを検索した文字でメッセージを取ってくる
-            ds.stream().sort("desc").next(function(err, datas) {
+            ds.stream().sort("desc").size(999).next(function(err, datas) {
                 // console.log('data.lengths'+ datas.length);
                 // console.log(datas);
                 datas.forEach(function(data) {

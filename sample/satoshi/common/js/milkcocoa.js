@@ -69,12 +69,38 @@ $(function() {
                 windPowerArray = [];
               }
           }
+          ///////////////////////////
           // 送信テスト
           // $("#test").click(function() {
           //     for(var i = 0; i < max-5; i++){
           //       addTextNode(i);
           //     }
           // }); 
+
+          //入力ボタンのクリック
+          $("#inPutBtn").click(function() {
+                console.log("input");
+          });
+
+          //titleを決定ボタンのクリック
+          $("#titlePostBtn").click(function() {
+                console.log("titlePostBtn");
+          }); 
+
+          //検索ボタンのクリック
+          $("#searchPutBtn").click(function() {
+                console.log("searchPutBtn");
+          }); 
+
+          //すべてを表示ボタンのクリック
+          $("#showAllPutBtn").click(function() {
+                console.log("showAllPutBtn");
+          }); 
+
+          //非表示ボタンのクリック
+          $("#hidePutBtn").click(function() {
+                console.log("hidePutBtn");
+          }); 
 
           //milkcocoaデータストアにプッシュ　引数1タイトル、引数2コンテンツ（風量）
           function post(titleStr, wind) {

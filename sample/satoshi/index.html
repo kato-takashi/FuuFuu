@@ -18,7 +18,31 @@
     <p id="censorLabel">censor value(WEB -> NATIVE) : <span class="censorVal wTOn">111</span></p>
 
     <!-- censor WEB -> NATIVE -->
-    <button id="outPutBtn">出力</button>
+    <div id="censorData" class="btnSet">
+      <button id="outPutBtn" class="btn">出力</button>
+      <button id="inPutBtn" class="btn">入力</button>
+    </div>
+
+    <div id="controller" class="btnSet">
+       <div class="postarea-text">
+          <textarea name="" id="content" cols="30" rows="10" placeholder="あなたのフーフーの名前を入力"></textarea>
+        </div>
+
+      <button id="titlePostBtn" class="postarea-button">titleを決定</button>
+
+      <div class="postarea-text">
+          <textarea name="" id="searchText" cols="30" rows="10" placeholder="誰かのフーフーを検索"></textarea>
+      </div>
+      <button id="searchPutBtn" class="btn">検索</button>
+      <button id="showAllPutBtn" class="btn">すべてを表示</button>
+      <button id="hidePutBtn" class="btn">非表示</button>
+    </div>
+
+    <div id="showContent" class="content">
+        <div id="dummy"></div>
+    </div>
+
+    
     <!-- <button id="test">test</button> -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src="http://cdn.mlkcca.com/v2.0.0/milkcocoa.js"></script>

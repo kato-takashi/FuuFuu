@@ -38,3 +38,16 @@ textarea{
   height:2em;
 }
 
+/* リスト表示 */
+.post{
+  margin-top: 2em;
+  border-bottom: 1px dotted #ccc;
+  padding: 0 1em 1em;
+  }
+.post-date {
+  font-size: .7em;
+  color: #848484;
+  text-align: right;
+  border: 0;
+  margin: 0;
+  }

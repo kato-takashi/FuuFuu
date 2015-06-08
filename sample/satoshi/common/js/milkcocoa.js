@@ -14,6 +14,8 @@ $(function() {
 
           //デモ用のタイマー
           var windInterval;
+          // title入力用の変数
+          var setTitleStr = '';
 
           // ds.stream().sort('desc').next(function(err, data) {
           //   console.log(data[0].id);
@@ -83,11 +85,13 @@ $(function() {
           $("#stopBtn").click(function() {
                 console.log("stop");
                 stopWind();
+                getAllDate();
           });
 
           //titleを決定ボタンのクリック
           $("#titlePostBtn").click(function() {
                 console.log("titlePostBtn");
+                setTitle();
           });
 
           //検索ボタンのクリック
@@ -111,15 +115,18 @@ $(function() {
 
           //milkcocoaデータストアにプッシュ　引数1タイトル、引数2コンテンツ（風量）
           function post(titleStr, wind) {
-              var titleStr = titleStr || 'androidTest'
+              var titleStr = titleStr || 'androidTest';
+              var name = '名無しさん';
               //5."message"データストアにメッセージをプッシュする
               console.log('milkcocoa push')
               var wind = wind;
               if (wind && wind !== "") {
                   primaryId++;
+                  console.log("primaryId", primaryId);
                   ds.push({
                       id:primaryId,
                       title: titleStr,
+                      name: name,
                       wind: wind,
                       date: new Date().getTime()
                   }, function (e) {});
@@ -165,11 +172,12 @@ $(function() {
             console.log('reset');
         }
         // すべてのデータ取得
+        getAllDate();
         function getAllDate(){
             resetHTML();
             //3."message"データストアからメッセージを取ってくる　//初期配列より　データ読み込みが増えるため
             ds.stream().sort("desc").size(999).next(function(err, datas) {
-                console.log('data.lengths'+ datas.length);
+                // console.log('data.lengths'+ datas.length);
                 primaryId = datas.length
                 datas.forEach(function(data) {
                     renderMessage(data.value);
@@ -197,6 +205,18 @@ $(function() {
             }
         }
 
+        ///title set
+        
+        function setTitle(){
+            setTitleStr = '';
+            // setTitleStr = $("#content").val();
+            // $('#postedTitle').text(setTitleStr);
+            // $("#content").val("");
+            setTitleStr = $('#titleVal').val();
+            $("#titleName").text(setTitleStr);
+            $('#titleVal').val("");
+        }
+
         //デモ用
         function startWind(){
           windInterval = setInterval(getCensorVal,100);
@@ -204,7 +224,7 @@ $(function() {
 
         function stopWind(){
           // milkcocoaに送信
-          post("androidTestWind", windPowerArray);
+          post(setTitleStr, windPowerArray);
           clearInterval(windInterval);
           // 送信用のwind配列を初期化
           windPowerArray = [];
@@ -231,5 +251,6 @@ function outNative(array){
       Native.showToast(resArray[i]);
     }
 }
+
 
 

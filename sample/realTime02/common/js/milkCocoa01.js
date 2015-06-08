@@ -189,7 +189,6 @@ $(function() {
         }
 
         ////wind　event
-        ///
 
         $('#startWind').click(function () {
             windInterval = setInterval(randNumOne,1500);

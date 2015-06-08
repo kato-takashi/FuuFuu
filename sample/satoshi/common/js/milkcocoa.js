@@ -16,6 +16,8 @@ $(function() {
           var windInterval;
           // title入力用の変数
           var setTitleStr = '';
+          // 検索用の配列
+          var sortDataArr = [];
 
           // ds.stream().sort('desc').next(function(err, data) {
           //   console.log(data[0].id);
@@ -81,7 +83,7 @@ $(function() {
                 console.log("input");
                 startWind();
           });
-          //入力ボタンのクリック
+          //入力　停止ボタンのクリック
           $("#stopBtn").click(function() {
                 console.log("stop");
                 stopWind();
@@ -97,6 +99,8 @@ $(function() {
           //検索ボタンのクリック
           $("#searchPutBtn").click(function() {
                 console.log("searchPutBtn");
+                var searchStr = $('#searchText').val();
+                getSortData(searchStr);
           });
 
           //すべてを表示ボタンのクリック
@@ -152,13 +156,12 @@ $(function() {
             $('#windId' + message.id).click(function () {
                 var power = message;
                 // console.log('click', message.content, typeof windPower);
-                // エラー処理もしcontentの中身がstringじゃなかったら（空だったら）
-
+                // もしpowerの中身が配列じゃなかったらエラー処理（空だったら
                 if(typeof power === 'object'){
                   console.log(power.wind);
                   outNative(power.wind);
                 }else{
-                  console.log('はいっていないで');
+                  console.log('値がありまへん');
                   return;
                 }
             });
@@ -175,18 +178,50 @@ $(function() {
         getAllDate();
         function getAllDate(){
             resetHTML();
-            //3."message"データストアからメッセージを取ってくる　//初期配列より　データ読み込みが増えるため
-            ds.stream().sort("desc").size(999).next(function(err, datas) {
+            //3.データストアからメッセージを取ってくる
+            dsStream(renderMessage); 
+        }
+
+        //3.データストアからメッセージを取ってくる
+        function dsStream(callback){
+          ds.stream().sort("desc").size(999).next(function(err, datas) {
                 // console.log('data.lengths'+ datas.length);
                 primaryId = datas.length
                 datas.forEach(function(data) {
-                    renderMessage(data.value);
+                    callback(data.value);
                     // console.log(data.value.title);
                     // console.log(data);
                     // console.log(data.value);
                     // console.log(data.value.content);
                 });
-            });    
+            }); 
+        }
+
+        // 検索機能
+        function getSortData(sortStr){
+            //HTMLをリセット
+            resetHTML();
+            sortDataArr = [];
+            var sortArrNum = 0;
+            //"message"データストアからtitleを検索した文字でメッセージを取ってくる
+            ds.stream().sort("desc").size(999).next(function(err, datas) {
+                datas.forEach(function(data) {
+                    ////////////////
+                    // 正規表現によりsortStrが含まれているかを判定
+                    var re = new RegExp(sortStr, "i");
+                    if(data.value.title.match(re)){
+                        sortDataArr.push(data);   
+                        renderMessage(sortDataArr[sortArrNum].value);
+                        sortArrNum++ ;
+                    }
+                    console.log(data.value.title);
+                    // sortStrの文字とdata.value.titleを比較し，もしマッチしたらsortDataArrに格納
+                });
+                if(sortDataArr.length == 0){
+                    console.log('そんなのないみたい。');
+                    alert('そんなのないみたい。')
+                }
+            });
         }
 
         /////////
@@ -206,12 +241,8 @@ $(function() {
         }
 
         ///title set
-        
         function setTitle(){
             setTitleStr = '';
-            // setTitleStr = $("#content").val();
-            // $('#postedTitle').text(setTitleStr);
-            // $("#content").val("");
             setTitleStr = $('#titleVal').val();
             $("#titleName").text(setTitleStr);
             $('#titleVal').val("");
@@ -230,7 +261,6 @@ $(function() {
           windPowerArray = [];
           console.log('stop');
         }
-
           //////////今西さんのデータ
           // addTextNode('CLOSE');
   });
@@ -250,6 +280,11 @@ function outNative(array){
       // console.log("resArray"+ resArray[i]);
       Native.showToast(resArray[i]);
     }
+}
+
+// 配列かどうか判定
+function isArray(obj) {
+    return Object.prototype.toString.call(obj) === '[object Array]';
 }
 
 

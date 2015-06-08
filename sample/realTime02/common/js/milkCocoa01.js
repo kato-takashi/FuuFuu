@@ -73,8 +73,6 @@ $(function() {
                     alert('そんなのないみたい。')
                 }
             });
-
-
         }
         //検索ボタンが押されたら
         $('#getSortDataBtn').click(function () {

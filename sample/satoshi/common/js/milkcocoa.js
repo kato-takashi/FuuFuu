@@ -193,8 +193,6 @@ $(function() {
             //配列が50個になったら，milkcocoaに送信
             windPowerArray.push(windPower);
             if(windPowerArray.length == max){
-              post("androidTestWind", windPowerArray);
-              
               stopWind();
             }
         }
@@ -205,6 +203,8 @@ $(function() {
         }
 
         function stopWind(){
+          // milkcocoaに送信
+          post("androidTestWind", windPowerArray);
           clearInterval(windInterval);
           // 送信用のwind配列を初期化
           windPowerArray = [];

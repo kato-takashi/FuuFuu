@@ -194,8 +194,7 @@ $(function() {
             windPowerArray.push(windPower);
             if(windPowerArray.length == max){
               post("androidTestWind", windPowerArray);
-              // 配列を初期化
-              windPowerArray = [];
+              
               stopWind();
             }
         }
@@ -207,6 +206,8 @@ $(function() {
 
         function stopWind(){
           clearInterval(windInterval);
+          // 送信用のwind配列を初期化
+          windPowerArray = [];
           console.log('stop');
         }
 

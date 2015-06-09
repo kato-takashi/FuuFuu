@@ -48,7 +48,7 @@ FooFooClass.prototype = (function() {
     var date_html = '';
     var button_html = '<button class="windOutPutBtn" id = "windId' + message.id +'">OutPut</button>';
     if(message.date) {
-      date_html = '<p class="post-date">'+'id: ' + _escapeHTML(message.id) + ' ' + _escapeHTML(message.name) + ' ' + _escapeHTML(message.title)+' : '+ _escapeHTML( new Date(message.date).toLocaleString())+'</p>';
+      date_html = '<p class="post-date">'+'id: ' + _escapeHTML(message.id) + ', ' + _escapeHTML(message.name) + ' ' + _escapeHTML(message.title)+' : '+ _escapeHTML( new Date(message.date).toLocaleString())+'</p>';
     }
     $("#"+last_message).before('<div id="'+message.id+'" class="post">'+ button_html + message_html + date_html +'</div>');
     //$("#"+last_message).before('<div id="'+message.id+'" class="post">'+ _escapeHTML(message.name) +'</div>');
@@ -111,7 +111,12 @@ FooFooClass.prototype = (function() {
               ////////////////
               // 正規表現によりsortStrが含まれているかを判定
               var re = new RegExp(sortStr, "i");
-              if(data.value.title.match(re)){
+              //Stringへキャスト
+              var nameStr = String(data.value.name);
+              var titleStr = String(data.value.title);
+              //titleかnameに文字が含まれていたら
+              if(titleStr.match(re) || nameStr.match(re)){
+                  console.log(typeof data.value.title);
                   sortDataArr.push(data);
                   _renderMessage(sortDataArr[sortArrNum].value);
                   sortArrNum++ ;

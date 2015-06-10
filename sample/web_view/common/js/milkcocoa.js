@@ -21,6 +21,15 @@ FooFooClass.prototype = (function() {
       // 検索用の配列
       sortDataArr = [],
       last_message = "dummy";
+  
+// milkcocoa定義関数pushの発火イベント監視　
+  function _keepWatch(callback){
+    ds.on("push", function(e) {
+      callback(e.value);
+      console.log('keepWatch', e.value);
+    });
+  }
+ 
 
   // "message"データストアにメッセージをプッシュする
   function _post(titleStr, wind, name) {
@@ -32,6 +41,7 @@ FooFooClass.prototype = (function() {
     if (wind && wind !== "") {
       primaryId++;
       // console.log("primaryId", primaryId);
+      ////milkcocoa定義関数push（データストアへ挿入）
       ds.push({
         id: primaryId,
         title: titleStr,
@@ -40,12 +50,6 @@ FooFooClass.prototype = (function() {
         date: new Date().getTime()
       }, function (e) {});
     }
-  }
-  //データストアのプッシュイベントを監視
-  function _keepWatch(){
-      ds.on("_push", function(e) {
-      _renderMessage(e.value);
-    });  
   }
   
   // HTMLにデータを表示
@@ -170,6 +174,7 @@ FooFooClass.prototype = (function() {
     setNameStr = '';
     // milkcocoaに送信
     _post(setTitleStr, windPowerArray, setNameStr);
+
     clearInterval(windInterval);
     // 送信用のwind配列を初期化
     windPowerArray = [];
@@ -200,8 +205,8 @@ FooFooClass.prototype = (function() {
 
   //return API
   return {
-    post:  _post,
     keepWatch: _keepWatch,
+    post:  _post,
     renderMessage: _renderMessage,
     resetHTML: _resetHTML,
     getAllDate: _getAllDate,
@@ -261,8 +266,11 @@ $(function() {
         // console.log("hidePutBtn");
         f.resetHTML();
   });
-  f.keepWatch();
+
+  //初回起動時にデータ取得
   f.getAllDate();
+  //初回起動時にmilkcocoa定義関数push(データストアに挿入)の発火イベント監視 → pushが発火時にrenderMessageのコールバック関数
+  f.keepWatch(f.renderMessage);
     //////////今西さんのデータ
     // addTextNode('CLOSE');
 });

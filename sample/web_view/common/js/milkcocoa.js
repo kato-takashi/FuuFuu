@@ -173,7 +173,7 @@ FooFooClass.prototype = (function() {
     setNameStr = '';
     //現在のprimaryIdを取得
       _dsStream();
-    
+    //入力値が空であった場合はデータストアに送信しない
     if(windPowerArray.length>0){
       // milkcocoaに送信
       _post(setTitleStr, windPowerArray, setNameStr);

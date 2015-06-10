@@ -26,6 +26,8 @@ FooFooClass.prototype = (function() {
   function _keepWatch(callback){
     ds.on("push", function(e) {
       callback(e.value);
+      //複数接続の場合の値の変化に対応するため、変更された段階でprimaryIdを取得
+      _dsStream();
     });
   }
  

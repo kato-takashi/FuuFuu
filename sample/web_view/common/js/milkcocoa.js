@@ -24,7 +24,7 @@ FooFooClass.prototype = (function() {
 
   // "message"データストアにメッセージをプッシュする
   function _post(titleStr, wind, name) {
-    var titleStr = titleStr || 'androidTest';
+    var titleStr = titleStr || 'My dear';
     var name = name || '名無しさん';
     console.log(name);
     console.log('milkcocoa push');
@@ -41,14 +41,20 @@ FooFooClass.prototype = (function() {
       }, function (e) {});
     }
   }
-
+  //データストアのプッシュイベントを監視
+  function _keepWatch(){
+      ds.on("_push", function(e) {
+      _renderMessage(e.value);
+    });  
+  }
+  
   // HTMLにデータを表示
   function _renderMessage(message) {
     var message_html = '<p class="post-text">' + _escapeHTML(message.wind) + '</p>';
     var date_html = '';
     var button_html = '<button class="windOutPutBtn" id = "windId' + message.id +'">OutPut</button>';
     if(message.date) {
-      date_html = '<p class="post-date">'+'id: ' + _escapeHTML(message.id) + ', ' + _escapeHTML(message.name) + ' ' + _escapeHTML(message.title)+' : '+ _escapeHTML( new Date(message.date).toLocaleString())+'</p>';
+      date_html = '<p class="post-date">'+'id: ' + _escapeHTML(message.id) + ', ' + _escapeHTML(message.name) + ' ' +　'「' +  _escapeHTML(message.title)+　'」' +' : '+ _escapeHTML( new Date(message.date).toLocaleString())+'</p>';
     }
     $("#"+last_message).before('<div id="'+message.id+'" class="post">'+ button_html + message_html + date_html +'</div>');
     //$("#"+last_message).before('<div id="'+message.id+'" class="post">'+ _escapeHTML(message.name) +'</div>');
@@ -195,6 +201,7 @@ FooFooClass.prototype = (function() {
   //return API
   return {
     post:  _post,
+    keepWatch: _keepWatch,
     renderMessage: _renderMessage,
     resetHTML: _resetHTML,
     getAllDate: _getAllDate,
@@ -254,6 +261,7 @@ $(function() {
         // console.log("hidePutBtn");
         f.resetHTML();
   });
+  f.keepWatch();
   f.getAllDate();
     //////////今西さんのデータ
     // addTextNode('CLOSE');

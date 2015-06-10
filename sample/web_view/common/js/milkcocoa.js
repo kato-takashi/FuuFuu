@@ -26,7 +26,6 @@ FooFooClass.prototype = (function() {
   function _keepWatch(callback){
     ds.on("push", function(e) {
       callback(e.value);
-      console.log('keepWatch', e.value);
     });
   }
  
@@ -35,12 +34,10 @@ FooFooClass.prototype = (function() {
   function _post(titleStr, wind, name) {
     var titleStr = titleStr || 'My dear';
     var name = name || '名無しさん';
-    console.log(name);
+    // console.log(name);
     console.log('milkcocoa push');
     var wind = wind;
     if (wind && wind !== "") {
-      primaryId++;
-      // console.log("primaryId", primaryId);
       ////milkcocoa定義関数push（データストアへ挿入）
       ds.push({
         id: primaryId,
@@ -96,9 +93,10 @@ FooFooClass.prototype = (function() {
 
   // データストアからメッセージを取ってくる
   function _dsStream(callback) {
+    var callback = callback || function(){ return };//引数なし
     ds.stream().sort("desc").size(999).next(function(err, datas) {
-          // console.log('data.lengths'+ datas.length);
-          primaryId = datas.length
+          console.log('primaryId登録'+ datas.length);
+          primaryId = datas.length;
           datas.forEach(function(data) {
               callback(data.value);
               // console.log(data.value.title);
@@ -172,6 +170,8 @@ FooFooClass.prototype = (function() {
   function _stopWind() {
     //your nameをセット
     setNameStr = '';
+    //現在のprimaryIdを取得
+      _dsStream();
     // milkcocoaに送信
     _post(setTitleStr, windPowerArray, setNameStr);
 

@@ -134,7 +134,7 @@ FooFooClass.prototype = (function() {
           });
           if(sortDataArr.length == 0){
               console.log('そんなのないみたい。');
-              alert('そんなのないみたい。')
+              alert('そんなのないみたい。');
           }
       });
   }
@@ -147,8 +147,9 @@ FooFooClass.prototype = (function() {
     $("#windPower").text(windPower);
     $(".nTOw").text(windPower);
       //windPowerを配列に
-      //配列が50個になったら，milkcocoaに送信
+      //配列がmax個になったら，milkcocoaに送信
       windPowerArray.push(windPower);
+      //配列がmax個になったら、stop
       if(windPowerArray.length == max){
         _stopWind();
       }
@@ -172,9 +173,14 @@ FooFooClass.prototype = (function() {
     setNameStr = '';
     //現在のprimaryIdを取得
       _dsStream();
-    // milkcocoaに送信
-    _post(setTitleStr, windPowerArray, setNameStr);
-
+    
+    if(windPowerArray.length>0){
+      // milkcocoaに送信
+      _post(setTitleStr, windPowerArray, setNameStr);
+    }else{
+      alert('入力値がありません');
+    }
+    
     clearInterval(windInterval);
     // 送信用のwind配列を初期化
     windPowerArray = [];
@@ -219,7 +225,7 @@ FooFooClass.prototype = (function() {
     escapeHTML: _escapeHTML,
     outNative: _outNative,
     isArray: _isArray
-  }
+  };
 
 }());
 

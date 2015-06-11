@@ -52,15 +52,19 @@
 			<button id="startShot">start shot</button>
 		</div>
 		<div id="shotedPct"></div>
+		<div id="playPct"><img /></div>
+		<button id="playVideo">play</button>
+
 	</body>
 	<script>
 		var video = document.querySelector('video');
 		var canvas = document.querySelector('canvas');
 		var ctx = canvas.getContext('2d');
 		var localMediaStream = null;
-		var shotInterval;
-		var shotCounter = 0, maxShot = 10;
+		var shotInterval, playVideoInterval;
+		var shotCounter = 0, maxShot = 20, shotSpeed = 200;
 		var shotArray = [];
+		var playCounter = 0;
 
 		//カメラ使えるかチェック
 		var hasGetUserMedia = function() {
@@ -84,22 +88,41 @@
 				if(shotCounter == maxShot){
 					console.log("定数に達したので止めます")
 					stopShot();
+					shotCounter = 0;
 				}
 			}
 		}
 
 		//連続撮影
 		var startShot = function(){
-			shotInterval = setInterval(snapshot,500);
+			shotInterval = setInterval(snapshot, shotSpeed);
 		}
 
 		//連続撮影のストップ
-		function stopShot(){
+		var stopShot = function(){
 			clearInterval(shotInterval);
 			localMediaStream.stop();
-			for(var i = 0; i < shotArray.length; i++){
-				console.log('shotArray: ', i , shotArray[i]);
-				$('#shotedPct').append('<img clas="shotImage" id="shotImage' + i +'" src="' + shotArray[i] +'" alt="" />')
+			//撮影した写真の出力
+			// for(var i = 0; i < shotArray.length; i++){
+			// 	// console.log('shotArray: ', i , shotArray[i]);
+			// 	$('#shotedPct').append('<img clas="shotImage" id="shotImage' + i +'" src="' + shotArray[i] +'" alt="" />')
+			// }
+		}
+
+		//撮影したビデオを再生
+		var playVideo = function(){
+				playVideoInterval = setInterval(setImage, shotSpeed);
+		}
+		//写真を差し替えて疑似アニメーション
+		var setImage = function(){
+			var url = shotArray[playCounter];
+			var img_url = String(url);
+			$("#playPct").children("img").attr({'src':img_url});
+			console.log('interval1: ', url);
+			playCounter++;
+			if(playCounter >= shotArray.length){
+				clearInterval(playVideoInterval);
+				playCounter = 0;
 			}
 		}
 
@@ -131,6 +154,9 @@
 		});
 		$("#startShot").click(function() {
 			startShot();
+		});
+		$("#playVideo").click(function() {
+			playVideo();
 		});
 
 	</script>

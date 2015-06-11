@@ -36,9 +36,6 @@
 			#stop {
 				background-color:#880000;
 			}
-			.shotImage{
-				width:50px;
-			}
 
 		</style>
 	</head> 
@@ -49,18 +46,14 @@
 		<div id="wrapper"> 
 			<button id="capture">capture</button>
 			<button id="stop">stop</button>
-			<button id="startShot">start shot</button>
 		</div>
-		<div id="shotedPct"></div>
+
 	</body>
 	<script>
 		var video = document.querySelector('video');
 		var canvas = document.querySelector('canvas');
 		var ctx = canvas.getContext('2d');
 		var localMediaStream = null;
-		var shotInterval;
-		var shotCounter = 0, maxShot = 10;
-		var shotArray = [];
 
 		//カメラ使えるかチェック
 		var hasGetUserMedia = function() {
@@ -77,29 +70,7 @@
 			if (localMediaStream) {
 				ctx.drawImage(video, 0, 0);
 				console.log(canvas.toDataURL('image/webp'));
-				shotArray.push(canvas.toDataURL('image/webp'));
 				document.querySelector('img').src = canvas.toDataURL('image/webp');
-				shotCounter ++;
-				console.log('shotCounter:', shotCounter);
-				if(shotCounter == maxShot){
-					console.log("定数に達したので止めます")
-					stopShot();
-				}
-			}
-		}
-
-		//連続撮影
-		var startShot = function(){
-			shotInterval = setInterval(snapshot,500);
-		}
-
-		//連続撮影のストップ
-		function stopShot(){
-			clearInterval(shotInterval);
-			localMediaStream.stop();
-			for(var i = 0; i < shotArray.length; i++){
-				console.log('shotArray: ', i , shotArray[i]);
-				$('#shotedPct').append('<img clas="shotImage" id="shotImage' + i +'" src="' + shotArray[i] +'" alt="" />')
 			}
 		}
 
@@ -124,13 +95,10 @@
 			snapshot();
 		});
 		$("#stop").click(function() {
-			stopShot();
+			localMediaStream.stop();
 		});
 		$("video").click(function() {
 			snapshot();
-		});
-		$("#startShot").click(function() {
-			startShot();
 		});
 
 	</script>

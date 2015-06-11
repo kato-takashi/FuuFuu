@@ -19,11 +19,10 @@
 		</script>
 		
 		<style>
-			img,canvas,video {
-				/*
-				width:500px;
-				height:500px;
-				*/
+			img,canvas,video, #playPct {
+				
+				width:50px;
+				height:50px;
 				background-color:black;
 			}
 			button {
@@ -45,10 +44,11 @@
 		</style>
 	</head> 
 	<body> 
-		<video autoplay width="640" height="480"></video>
-		<img src="" width="640" height="480" >
-		<canvas style="display:none;" width="640" height="480"></canvas>
-		<div id="wrapper"> 
+		<video autoplay ></video>
+		
+		<canvas style="display:none;"></canvas>
+		<div id="wrapper">
+			<button id="startCamera">start Camera</button>
 			<button id="capture">capture</button>
 			<button id="stop">stop</button>
 			<button id="startShot">start shot</button>
@@ -70,12 +70,14 @@
 		var playCounter = 0;
 		/////////milkcocoa
 		//1.ミルクココアインスタンスを作成
-        var milkcocoa = new MilkCocoa("maxiac8gg9b.mlkcca.com");
+        var milkcocoa = new MilkCocoa("hotiarmy2mf.mlkcca.com");
         //2."message"データストアを作成
         var ds = milkcocoa.dataStore("FuuPct");
         //データストアからすべてのデータを取得する配列
         var dsAllData =[];
         var primaryId = 0;
+        //pushのカウンター
+        var pushCounter = 0;
 
         //データストアからすべてのデータを取得
         ds.stream().sort("desc").size(999).next(function(err, datas) {
@@ -87,32 +89,62 @@
             });
         });
 
+        var getNumSort = function(sortNum){
+        	shotArray = [];
+        	playCounter = 0;
+        	ds.stream().sort("desc").size(sortNum).next(function(err, datas) {
+	            // console.log(datas);
+	            datas.forEach(function(data) {
+	                shotArray.push(data.value.url);
+	            });
+	        });
+
+        }
+
         //4."message"データストアのプッシュイベントを監視
         ds.on("push", function(e) {
             // renderMessage(e.value);
-			playVideo();
+			// playVideo();
+			console.log('push完了');
+			pushCounter ++;
+			console.log('shotArray.length', shotArray.length);
+			console.log('pushCounter', pushCounter );
+			if(pushCounter == shotArray.length){
+				// getNumSort(maxShot);
+				playVideo();
+				console.log('start anime');
+				pushCounter = 0;
+				shotArray = [];
+			}
         });
+
 
         //milkcocoaデータストアにプッシュ　引数1タイトル、引数2コンテンツ（風量）
         function post(titleStr, contentStr) {
-            var titleStr = titleStr || 'タイトルなし';
+            var titleStr = escapeHTML(titleStr) || 'タイトルなし';
             var name = '名無しさん';
             //5."message"データストアにメッセージをプッシュする
+            // var content = escapeHTML(contentStr);
             var content = contentStr;
-     
+     		// console.log('contentStr', typeof contentStr);
             if (content && content !== "") { 
 	            console.log('milkcocoa push')
-
+	            // console.log(content);
                 primaryId++;
                 ds.push({
                     id:primaryId,
                     title: titleStr,
                     name: name,
-                    content: content,
+                    url: content,
                     date: new Date().getTime()
-                }, function (e) {});
+                }, function (e) {console.log(e)});
             }        
         }
+
+        //インジェクション対策
+        function escapeHTML(val) {
+			return $('<div>').text(val).html();
+		};
 
 		//カメラ使えるかチェック
 		var hasGetUserMedia = function() {
@@ -133,11 +165,13 @@
 				shotArray.push(canvas.toDataURL('image/webp'));
 				document.querySelector('img').src = canvas.toDataURL('image/webp');
 				shotCounter ++;
-				console.log('shotCounter:', shotCounter);
+				// console.log('shotCounter:', shotCounter);
 				if(shotCounter == maxShot){
 					console.log("定数に達したので止めます")
 					//milkcocoaへ送信
-					post('FuuFuuイメージ', shotArray)
+					for(var i = 0; i < shotArray.length; i++){
+						post('うめさん', shotArray[i]);	
+					}
 					stopShot();
 					shotCounter = 0;
 				}
@@ -152,6 +186,7 @@
 		//連続撮影のストップ
 		var stopShot = function(){
 			clearInterval(shotInterval);
+			clearInterval(playVideoInterval);
 			localMediaStream.stop();
 			//撮影した写真の出力
 			// for(var i = 0; i < shotArray.length; i++){
@@ -171,11 +206,12 @@
 			var url = shotArray[playCounter];
 			var img_url = String(url);
 			$("#playPct").children("img").attr({'src':img_url});
-			console.log('interval1: ', url);
+			console.log('playCounter: ', playCounter);
 			playCounter++;
-			if(playCounter >= shotArray.length){
+			if(playCounter == maxShot){
 				clearInterval(playVideoInterval);
 				playCounter = 0;
+				console.log('finish');
 			}
 		}
 
@@ -190,12 +226,18 @@
 		navigator.getUserMedia  = navigator.getUserMedia || navigator.webkitGetUserMedia ||
 								  navigator.mozGetUserMedia || navigator.msGetUserMedia;
 
-		navigator.getUserMedia({video: true}, function(stream) {
-		  video.src = window.URL.createObjectURL(stream);
-		  localMediaStream = stream;
-		}, onFailSoHard);
+		
+		var startCamera = function(){
+			navigator.getUserMedia({video: true}, function(stream) {
+			  video.src = window.URL.createObjectURL(stream);
+			  localMediaStream = stream;
+			}, onFailSoHard);	
+		}
 
 		//ボタンイベント
+		$("#startCamera").click(function() {
+			startCamera();
+		});
 		$("#capture").click(function() {
 			snapshot();
 		});
@@ -222,6 +264,8 @@
 		    $("#" + id).attr("href", window.URL.createObjectURL(blob));
 		    $("#" + id).attr("download", "playBase64.txt");
 		}
+
+
 
 	</script>
 </html>

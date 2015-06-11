@@ -1,0 +1,227 @@
+<!DOCTYPE html> 
+<html> 
+	<head> 
+		<meta charset="utf-8">
+		<title>カメラ　テスト</title> 
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+		    <script src="http://cdn.mlkcca.com/v2.0.0/milkcocoa.js"></script>
+
+		<script type="text/javascript">
+			var _gaq = _gaq || [];
+			_gaq.push(['_setAccount', 'UA-33907251-1']);
+			_gaq.push(['_setDomainName', 'o24.me']);
+			_gaq.push(['_trackPageview']);
+			(function() {
+				var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+				ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+				var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+			})();
+		</script>
+		
+		<style>
+			img,canvas,video {
+				/*
+				width:500px;
+				height:500px;
+				*/
+				background-color:black;
+			}
+			button {
+				border:1px solid #eeeeee;
+				width:100px;
+				height:30px;
+				color:white;
+			}
+			#capture {
+				background-color:#008800;
+			}
+			#stop {
+				background-color:#880000;
+			}
+			.shotImage{
+				width:50px;
+			}
+
+		</style>
+	</head> 
+	<body> 
+		<video autoplay width="640" height="480"></video>
+		<img src="" width="640" height="480" >
+		<canvas style="display:none;" width="640" height="480"></canvas>
+		<div id="wrapper"> 
+			<button id="capture">capture</button>
+			<button id="stop">stop</button>
+			<button id="startShot">start shot</button>
+		</div>
+		<div id="shotedPct"></div>
+		<div id="playPct"><img /></div>
+		<button id="playVideo">play</button>
+		<!-- <a id="download" target="_blank">ダウンロード(IEでは、右クリック>対象をファイルに保存)</a> -->
+
+	</body>
+	<script>
+		var video = document.querySelector('video');
+		var canvas = document.querySelector('canvas');
+		var ctx = canvas.getContext('2d');
+		var localMediaStream = null;
+		var shotInterval, playVideoInterval;
+		var shotCounter = 0, maxShot = 10, shotSpeed = 200;
+		var shotArray = [];
+		var playCounter = 0;
+		/////////milkcocoa
+		//1.ミルクココアインスタンスを作成
+        var milkcocoa = new MilkCocoa("maxiac8gg9b.mlkcca.com");
+        //2."message"データストアを作成
+        var ds = milkcocoa.dataStore("FuuPct");
+        //データストアからすべてのデータを取得する配列
+        var dsAllData =[];
+        var primaryId = 0;
+
+        //データストアからすべてのデータを取得
+        ds.stream().sort("desc").size(999).next(function(err, datas) {
+            console.log('data.lengths'+ datas.length);
+            primaryId = datas.length;
+            // console.log(datas);
+            datas.forEach(function(data) {
+                dsAllData.push(data.value);
+            });
+        });
+
+        //4."message"データストアのプッシュイベントを監視
+        ds.on("push", function(e) {
+            // renderMessage(e.value);
+			playVideo();
+        });
+
+        //milkcocoaデータストアにプッシュ　引数1タイトル、引数2コンテンツ（風量）
+        function post(titleStr, contentStr) {
+            var titleStr = titleStr || 'タイトルなし';
+            var name = '名無しさん';
+            //5."message"データストアにメッセージをプッシュする
+            var content = contentStr;
+     
+            if (content && content !== "") { 
+	            console.log('milkcocoa push')
+
+                primaryId++;
+                ds.push({
+                    id:primaryId,
+                    title: titleStr,
+                    name: name,
+                    content: content,
+                    date: new Date().getTime()
+                }, function (e) {});
+            }        
+        }
+
+		//カメラ使えるかチェック
+		var hasGetUserMedia = function() {
+			return !!(navigator.getUserMedia || navigator.webkitGetUserMedia ||
+				navigator.mozGetUserMedia || navigator.msGetUserMedia);
+		}
+		//エラー
+		var onFailSoHard = function(e) {
+			console.log('エラー!', e);
+		};
+
+		//カメラ画像キャプチャ
+		var snapshot = function() {
+			if (localMediaStream) {
+				ctx.drawImage(video, 0, 0);
+				console.log(canvas.toDataURL('image/webp'));
+				//キャプチャした画像を配列に格納
+				shotArray.push(canvas.toDataURL('image/webp'));
+				document.querySelector('img').src = canvas.toDataURL('image/webp');
+				shotCounter ++;
+				console.log('shotCounter:', shotCounter);
+				if(shotCounter == maxShot){
+					console.log("定数に達したので止めます")
+					//milkcocoaへ送信
+					post('FuuFuuイメージ', shotArray)
+					stopShot();
+					shotCounter = 0;
+				}
+			}
+		}
+
+		//連続撮影
+		var startShot = function(){
+			shotInterval = setInterval(snapshot, shotSpeed);
+		}
+
+		//連続撮影のストップ
+		var stopShot = function(){
+			clearInterval(shotInterval);
+			localMediaStream.stop();
+			//撮影した写真の出力
+			// for(var i = 0; i < shotArray.length; i++){
+			// 	// console.log('shotArray: ', i , shotArray[i]);
+			// 	$('#shotedPct').append('<img clas="shotImage" id="shotImage' + i +'" src="' + shotArray[i] +'" alt="" />')
+			// }
+		}
+
+		//撮影したビデオを再生
+		var playVideo = function(){
+				//写真をBase64のファイルへ出力
+				// setBlobUrl("download", shotArray);
+				playVideoInterval = setInterval(setImage, shotSpeed);
+		}
+		//写真を差し替えて疑似アニメーション
+		var setImage = function(){
+			var url = shotArray[playCounter];
+			var img_url = String(url);
+			$("#playPct").children("img").attr({'src':img_url});
+			console.log('interval1: ', url);
+			playCounter++;
+			if(playCounter >= shotArray.length){
+				clearInterval(playVideoInterval);
+				playCounter = 0;
+			}
+		}
+
+		if (hasGetUserMedia()) {
+			console.log("カメラ OK");
+		} else {
+			alert("未対応ブラウザです。");
+		}
+
+
+		window.URL = window.URL || window.webkitURL;
+		navigator.getUserMedia  = navigator.getUserMedia || navigator.webkitGetUserMedia ||
+								  navigator.mozGetUserMedia || navigator.msGetUserMedia;
+
+		navigator.getUserMedia({video: true}, function(stream) {
+		  video.src = window.URL.createObjectURL(stream);
+		  localMediaStream = stream;
+		}, onFailSoHard);
+
+		//ボタンイベント
+		$("#capture").click(function() {
+			snapshot();
+		});
+		$("#stop").click(function() {
+			stopShot();
+		});
+		$("video").click(function() {
+			snapshot();
+		});
+		$("#startShot").click(function() {
+			startShot();
+		});
+		$("#playVideo").click(function() {
+			playVideo();
+		});
+
+		////////////ファイルの保存　idへダウンロードリンクの張り直し
+		function setBlobUrl(id, content) {
+		 // 指定されたデータを保持するBlobを作成する。
+		    var blob = new Blob([ content ], { "type" : "application/x-msdownload" });
+		 
+		 // Aタグのhref属性にBlobオブジェクトを設定し、リンクを生成
+		    window.URL = window.URL || window.webkitURL;
+		    $("#" + id).attr("href", window.URL.createObjectURL(blob));
+		    $("#" + id).attr("download", "playBase64.txt");
+		}
+
+	</script>
+</html>

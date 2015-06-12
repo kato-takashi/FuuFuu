@@ -77,14 +77,14 @@
 		var canvas = document.querySelector('canvas');
 		var ctx = canvas.getContext('2d');
 		var localMediaStream = null;
-		var shotInterval, playVideoInterval;
-		var shotCounter = 0, maxShot = 10, shotSpeed = 500;
+		var shotInterval, playVideoInterval, pushInterval;
+		var shotCounter = 0, maxShot = 10, shotSpeed = 700;
 		var shotArray = [];
 		var playCounter = 0;
 		var setTitleStr = '';
 		/////////milkcocoa
 		//1.ミルクココアインスタンスを作成
-        var milkcocoa = new MilkCocoa("juiceias9xfon.mlkcca.com");
+        var milkcocoa = new MilkCocoa("blueiasuq2hz.mlkcca.com");
         //2."message"データストアを作成
         var ds = milkcocoa.dataStore("fuuFace");
         //データストアからすべてのデータを取得する配列
@@ -124,16 +124,16 @@
             // renderMessage(e.value);
 			// playVideo();
 			console.log('push完了');
-			// pushCounter ++;
+			pushCounter ++;
 			// console.log('shotArray.length', shotArray.length);
 			// console.log('pushCounter', pushCounter );
-			// if(pushCounter == shotArray.length){
-			// 	// getNumSort(maxShot);
-			// 	playVideo();
-			// 	console.log('start anime');
-			// 	pushCounter = 0;
-			// 	shotArray = [];
-			// }
+			if(pushCounter == maxShot){
+				// getNumSort(maxShot);
+				playVideo();
+				console.log('start anime');
+				pushCounter = 0;
+				shotArray = [];
+			}
         });
 
 
@@ -182,14 +182,15 @@
 				//キャプチャした画像を配列に格納
 				shotArray.push(canvas.toDataURL('image/webp'));
 				document.querySelector('img').src = canvas.toDataURL('image/webp');
+				post(setTitleStr, shotArray[shotCounter]);
 				shotCounter ++;
 				// console.log('shotCounter:', shotCounter);
 				if(shotCounter == maxShot){
 					console.log("定数に達したので止めます")
 					//milkcocoaへ送信
-					for(var i = 0; i < maxShot; i++){
-						post(setTitleStr, shotArray[i]);	
-					}
+					// for(var i = 0; i < maxShot; i++){
+					// 	post(setTitleStr, shotArray[i]);	
+					// }
 					stopShot();
 					shotCounter = 0;
 					console.log("空へ");

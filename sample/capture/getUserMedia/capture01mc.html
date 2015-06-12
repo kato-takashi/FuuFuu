@@ -7,20 +7,19 @@
 		<script src="http://cdn.mlkcca.com/v2.0.0/milkcocoa.js"></script>
 
 		<script type="text/javascript">
-			var _gaq = _gaq || [];
-			_gaq.push(['_setAccount', 'UA-33907251-1']);
-			_gaq.push(['_setDomainName', 'o24.me']);
-			_gaq.push(['_trackPageview']);
-			(function() {
-				var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-				ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-				var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-			})();
+			// var _gaq = _gaq || [];
+			// _gaq.push(['_setAccount', 'UA-33907251-1']);
+			// _gaq.push(['_setDomainName', 'o24.me']);
+			// _gaq.push(['_trackPageview']);
+			// (function() {
+			// 	var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			// 	ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			// 	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+			// })();
 		</script>
 		
 		<style>
 			img,canvas,video, #playPct {
-				
 				width:250px;
 				height:200px;
 				background-color:black;
@@ -61,7 +60,7 @@
 		<canvas style="display:none;"></canvas>
 		<div id="wrapper">
 			<button id="startCamera">1.start Camera</button>
-			<!-- <button id="capture">capture</button> -->
+			<button id="capture">capture</button>
 			<button id="startShot">2. start shot</button>
 			<button id="stop">stop</button>
 		</div>
@@ -114,6 +113,7 @@
 	                console.log("shotArray.length", shotArray.length)
 	                console.log("title: ", data.value.title);
 	                console.log("id: ", data.value.id);
+	                console.log("id: ", data.value.url);
 	            });
 	        });
 
@@ -176,8 +176,10 @@
 
 		//カメラ画像キャプチャ
 		var snapshot = function() {
+			var targetWidth = $(video).width() * 1.2;
+			var targetHeight = $(video).height() / 1.35;
 			if (localMediaStream) {
-				ctx.drawImage(video, 0, 0, 250, 200);
+				ctx.drawImage(video, 0, 0, targetWidth, targetHeight);
 				console.log(canvas.toDataURL('image/webp'));
 				//キャプチャした画像を配列に格納
 				shotArray.push(canvas.toDataURL('image/webp'));
@@ -222,18 +224,19 @@
 		//撮影したビデオを再生
 		var playVideo = function(){
 				getNumSort(maxShot, "dsc");
-				if(shotArray.length == 0){
+				if(shotArray.length == undefined){
 					console.log("データベースが空みたい");
 					return;
-
 				}
 				//写真をBase64のファイルへ出力
 				// setBlobUrl("download", shotArray);
 				playVideoInterval = setInterval(setImage, shotSpeed);
+				console.log("playStart")
 		}
 		//写真を差し替えて疑似アニメーション
 		var setImage = function(){
 			var url = shotArray[playCounter];
+			console.log("from setImage url", url);
 			var img_url = String(url);
 			$("#playPct").children("img").attr({'src':img_url});
 			console.log('playCounter: ', playCounter);

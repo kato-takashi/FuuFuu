@@ -94,7 +94,7 @@
 		//1.ミルクココアインスタンスを作成
         var milkcocoa = new MilkCocoa("blueiasuq2hz.mlkcca.com");
         //2."message"データストアを作成
-        var ds = milkcocoa.dataStore("fuuFace");
+        var ds = milkcocoa.dataStore("fuuFace2");
         //データストアからすべてのデータを取得する配列
         var dsAllData =[];
         var primaryId = 0;
@@ -106,9 +106,13 @@
             console.log('data.lengths'+ datas.length);
             primaryId = datas.length;
             // console.log(datas);
+            // alert('milkcocoaに接続OK');
             datas.forEach(function(data) {
                 dsAllData.push(data.value);
             });
+            if(err){
+            	alert('データベースに不具合が起きています。');
+            }
         });
 
         var getNumSort = function(sortNum, mode){
@@ -239,6 +243,7 @@
 
 		//撮影したビデオを再生
 		var playVideo = function(){
+
 				getNumSort(maxShot, "dsc");
 				if(shotArray.length == undefined){
 					console.log("データベースが空みたい");

@@ -49,8 +49,8 @@ public class MainActivity extends Activity implements DataStoreEventListener {
     }
 
     private void connect() {
-        this.milkcocoa = new MilkCocoa("{your-app-id}.mlkcca.com");
-        this.messagesDataStore = this.milkcocoa.dataStore("message");
+        this.milkcocoa = new MilkCocoa("readiaxuoy2r.mlkcca.com");
+        this.messagesDataStore = this.milkcocoa.dataStore("androidMessa");
         Streaming stream = this.messagesDataStore.streaming();
         stream.size(25);
         stream.sort("desc");

@@ -31,6 +31,8 @@ public class MainActivity extends Activity {
     // 画面タッチの2度押し禁止用フラグ
     private boolean mIsTake = false;
 
+    private int frontCameraId = 1;
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,7 +41,7 @@ public class MainActivity extends Activity {
 
         // カメラインスタンスの取得
         try {
-            mCam = Camera.open();
+            mCam = Camera.open(frontCameraId);
         } catch (Exception e) {
             // エラー
             this.finish();

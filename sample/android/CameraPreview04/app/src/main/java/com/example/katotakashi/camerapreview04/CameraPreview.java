@@ -2,6 +2,7 @@ package com.example.katotakashi.camerapreview04;
 
 import android.content.Context;
 import android.hardware.Camera;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -55,4 +56,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         // 画面回転に対応する場合は、ここでプレビューを停止し、
         // 回転による処理を実施、再度プレビューを開始する。
     }
+
+
 }

@@ -7,6 +7,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by katotakashi on 15/06/18.
@@ -61,8 +62,28 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         // 画面回転に対応する場合は、ここでプレビューを停止し、
         // 回転による処理を実施、再度プレビューを開始する。
-
+        mCam.stopPreview();
+        int maxSize = 320;
+        setPictureSize(mCam, maxSize);
+        mCam.startPreview();
     }
-
+    //撮影サイズの取得 //setPictureSizeにはgetSupportedPictureSizesで得られるセット以外は入れない
+    public void setPictureSize(Camera cam, int maxWidth) {
+        //端末がサポートするサイズ一覧取得
+        Camera.Parameters params = cam.getParameters();
+        List<Camera.Size> sizes = params.getSupportedPictureSizes();
+        if ( sizes != null && sizes.size() > 0) {
+            //撮影サイズを設定する
+            Camera.Size setSize = sizes.get(0);
+            for(Camera.Size size : sizes){
+                if(Math.min(size.width, size.height) <= maxWidth) {
+                    setSize = size;
+                    break;
+                }
+            }
+            params.setPictureSize(setSize.width, setSize.height);
+            cam.setParameters(params);
+        }
+    }
 
 }

@@ -36,10 +36,14 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         try {
             // カメラインスタンスに、画像表示先を設定
             mCam.setPreviewDisplay(holder);
+            /////////
+            ////////
             // プレビュー開始
             mCam.startPreview();
+
         } catch (IOException e) {
             //
+            e.printStackTrace();
         }
     }
 
@@ -47,6 +51,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
      * SurfaceView 破棄
      */
     public void surfaceDestroyed(SurfaceHolder holder) {
+        mCam.release();
+        mCam = null;
     }
 
     /**
@@ -55,6 +61,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         // 画面回転に対応する場合は、ここでプレビューを停止し、
         // 回転による処理を実施、再度プレビューを開始する。
+
     }
 
 

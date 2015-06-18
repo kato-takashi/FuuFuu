@@ -8,6 +8,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -105,12 +106,21 @@ public class MainActivity extends Activity {
             Calendar cal = Calendar.getInstance();
             SimpleDateFormat sf = new SimpleDateFormat("yyyyMMdd_HHmmss");
             String imgPath = saveDir + "/" + sf.format(cal.getTime()) + ".jpg";
+            //base64ファイル
+//            String imgPath = saveDir + "/" + sf.format(cal.getTime()) + ".txt";
             Log.i("imgPath", imgPath);
+
+            //Base64に変換
+            String encodedBase64 = "data:image/jpg;base64," + Base64.encodeToString(data, Base64.NO_WRAP);
+//            Log.i("encodedBase64", encodedBase64);
             // ファイル保存
             FileOutputStream fos;
             try {
                 fos = new FileOutputStream(imgPath, true);
+                //jpeg
                 fos.write(data);
+                //base64テキストファイル
+//                fos.write(encodedBase64.getBytes());
                 fos.close();
                 Log.i("imgPath", imgPath);
                 // アンドロイドのデータベースへ登録

@@ -5,24 +5,33 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.hardware.Camera;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
-public class MainActivity extends Activity {
+import com.mlkcca.client.DataElement;
+import com.mlkcca.client.DataElementValue;
+import com.mlkcca.client.DataStore;
+import com.mlkcca.client.Streaming;
+import com.mlkcca.client.StreamingListener;
+import com.mlkcca.client.MilkCocoa;
+import com.mlkcca.client.DataStoreEventListener;
+
+public class MainActivity extends Activity implements DataStoreEventListener{
     // カメラインスタンス
     private Camera mCam = null;
 
@@ -31,8 +40,15 @@ public class MainActivity extends Activity {
 
     // 画面タッチの2度押し禁止用フラグ
     private boolean mIsTake = false;
-
+    //フロントカメラのID
     private int frontCameraId = 1;
+    //base64の格納変数
+    String encodedBase64;
+
+    //////milkcocoa
+    private MilkCocoa milkcocoa;
+    private Handler handler = new Handler();
+    private DataStore messagesDataStore;
 
     /** Called when the activity is first created. */
     @Override
@@ -67,6 +83,9 @@ public class MainActivity extends Activity {
                 return true;
             }
         });
+
+        //milkcocoa connect
+        connect();
     }
 
 
@@ -108,10 +127,10 @@ public class MainActivity extends Activity {
             String imgPath = saveDir + "/" + sf.format(cal.getTime()) + ".jpg";
             //base64ファイル
 //            String imgPath = saveDir + "/" + sf.format(cal.getTime()) + ".txt";
-            Log.i("imgPath", imgPath);
-
+//            Log.i("imgPath", imgPath);
+            //bitmapに変換後→またバイトに戻す
             //Base64に変換
-            String encodedBase64 = "data:image/jpg;base64," + Base64.encodeToString(data, Base64.NO_WRAP);
+            encodedBase64 = "data:image/jpg;base64," + Base64.encodeToString(data, Base64.NO_WRAP);
 //            Log.i("encodedBase64", encodedBase64);
             // ファイル保存
             FileOutputStream fos;
@@ -127,6 +146,8 @@ public class MainActivity extends Activity {
                 // (登録しないとギャラリーなどにすぐに反映されないため)
                 registAndroidDB(imgPath);
                 Toast.makeText(getApplicationContext(), "写真が保存されました。", Toast.LENGTH_SHORT).show();
+                //milkcocoaへ送信
+                sendEvent(this);
 
             } catch (Exception e) {
                 Log.e("Debug", e.getMessage());
@@ -154,5 +175,97 @@ public class MainActivity extends Activity {
         values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
         values.put("_data", path);
         contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+    }
+
+    /*
+    * milkcocoa sdk
+    * */
+    private void connect() {
+        this.milkcocoa = new MilkCocoa("readiaxuoy2r.mlkcca.com");
+        this.messagesDataStore = this.milkcocoa.dataStore("androidCap");
+        Streaming stream = this.messagesDataStore.streaming();
+        stream.size(25);
+        stream.sort("desc");
+        stream.addStreamingListener(new StreamingListener() {
+
+            @Override
+            public void onData(ArrayList<DataElement> arg0) {
+                final ArrayList<DataElement> messages = arg0;
+
+                new Thread(new Runnable() {
+                    public void run() {
+                        handler.post(new Runnable() {
+                            public void run() {
+                                for (int i = 0; i < messages.size(); i++) {
+//                                    adapter.insert(messages.get(i).getValue("content"), i);
+                                    Log.i("milkcocoa 初期起動", messages.get(i).getValue("content"));
+                                }
+                            }
+                        });
+                    }
+                }).start();
+            }
+
+            @Override
+            public void onError(Exception e) {
+                e.printStackTrace();
+            }
+        });
+        stream.next();
+
+        this.messagesDataStore.addDataStoreEventListener((DataStoreEventListener) this);
+        this.messagesDataStore.on("push");
+    }
+
+    public void sendEvent(Camera.PictureCallback view){
+//        if (editText.getText().toString().length() == 0) {
+//            return;
+//        }
+//
+//        DataElementValue params = new DataElementValue();
+//        params.put("content", editText.getText().toString());
+//        Date date = new Date();
+//        params.put("date", date.getTime());
+//        this.messagesDataStore.push(params);
+//        editText.setText("");
+        DataElementValue params = new DataElementValue();
+        String pushStr = encodedBase64;
+        params.put("content", pushStr);
+        Date date = new Date();
+        params.put("date", date.getTime());
+        this.messagesDataStore.push(params);
+        Toast.makeText(getApplicationContext(), "milkcocoaへ送信。", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onPushed(DataElement dataElement) {
+        final DataElement pushed = dataElement;
+        new Thread(new Runnable() {
+            public void run() {
+                handler.post(new Runnable() {
+                    public void run() {
+                        String content = pushed.getValue("content");
+                        Toast.makeText(getApplicationContext(), "送信完了。", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+            }
+        }).start();
+
+    }
+
+    @Override
+    public void onSetted(DataElement dataElement) {
+
+    }
+
+    @Override
+    public void onSended(DataElement dataElement) {
+
+    }
+
+    @Override
+    public void onRemoved(DataElement dataElement) {
+
     }
 }

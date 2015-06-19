@@ -3,6 +3,9 @@ package com.example.katotakashi.camerapreview04;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.os.Environment;
 import android.os.Handler;
@@ -16,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
@@ -129,15 +133,24 @@ public class MainActivity extends Activity implements DataStoreEventListener{
 //            String imgPath = saveDir + "/" + sf.format(cal.getTime()) + ".txt";
 //            Log.i("imgPath", imgPath);
             //bitmapに変換後→またバイトに戻す
+            Bitmap smallBitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+            float sacaleNum = (float)0.10;
+            Bitmap rszBitmap = reSizeBitmap(smallBitmap, sacaleNum, sacaleNum);
+///////////////////////
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            rszBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+            byte[] reSizeBytes = baos.toByteArray();
+
             //Base64に変換
-            encodedBase64 = "data:image/jpg;base64," + Base64.encodeToString(data, Base64.NO_WRAP);
+            encodedBase64 = "data:image/jpg;base64," + Base64.encodeToString(reSizeBytes, Base64.NO_WRAP);
 //            Log.i("encodedBase64", encodedBase64);
             // ファイル保存
             FileOutputStream fos;
             try {
                 fos = new FileOutputStream(imgPath, true);
-                //jpeg
-                fos.write(data);
+                //jpeg　保存
+//                fos.write(data);
+                fos.write(reSizeBytes);
                 //base64テキストファイル
 //                fos.write(encodedBase64.getBytes());
                 fos.close();
@@ -177,6 +190,23 @@ public class MainActivity extends Activity implements DataStoreEventListener{
         contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
     }
 
+    ///////////
+    private static Bitmap reSizeBitmap(Bitmap bmp, double rszW, double rszY){
+        Matrix matrix = new Matrix();
+        Bitmap bmpRsz;
+        // 拡大比率
+        float rsz_ratio_w = (float) rszW;
+        float rsz_ratio_h = (float) rszY;
+        Log.i("Bitmap rsz", String.valueOf(rsz_ratio_w));
+        // 比率をMatrixに設定
+        matrix.postScale(rsz_ratio_w, rsz_ratio_h);
+        Log.i("Bitmap matrix", String.valueOf(matrix));
+        // リサイズ画像
+        bmpRsz = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(),bmp.getHeight(), matrix,true);
+        return bmpRsz;
+    }
+    ///////////
+
     /*
     * milkcocoa sdk
     * */
@@ -198,7 +228,7 @@ public class MainActivity extends Activity implements DataStoreEventListener{
                             public void run() {
                                 for (int i = 0; i < messages.size(); i++) {
 //                                    adapter.insert(messages.get(i).getValue("content"), i);
-                                    Log.i("milkcocoa 初期起動", messages.get(i).getValue("content"));
+                                    Log.i("milkcocoa OK", messages.get(i).getValue("content"));
                                 }
                             }
                         });

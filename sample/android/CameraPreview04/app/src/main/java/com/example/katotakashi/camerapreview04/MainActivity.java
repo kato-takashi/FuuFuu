@@ -134,7 +134,7 @@ public class MainActivity extends Activity implements DataStoreEventListener{
 //            Log.i("imgPath", imgPath);
             //bitmapに変換後→またバイトに戻す
             Bitmap smallBitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-            float sacaleNum = (float)0.10;
+            float sacaleNum = (float)0.1;
             Bitmap rszBitmap = reSizeBitmap(smallBitmap, sacaleNum, sacaleNum);
 ///////////////////////
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -154,7 +154,6 @@ public class MainActivity extends Activity implements DataStoreEventListener{
                 //base64テキストファイル
 //                fos.write(encodedBase64.getBytes());
                 fos.close();
-                Log.i("imgPath", imgPath);
                 // アンドロイドのデータベースへ登録
                 // (登録しないとギャラリーなどにすぐに反映されないため)
                 registAndroidDB(imgPath);
@@ -261,6 +260,7 @@ public class MainActivity extends Activity implements DataStoreEventListener{
         DataElementValue params = new DataElementValue();
         String pushStr = encodedBase64;
         params.put("content", pushStr);
+        Log.i("content", pushStr);
         Date date = new Date();
         params.put("date", date.getTime());
         this.messagesDataStore.push(params);

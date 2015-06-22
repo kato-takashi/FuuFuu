@@ -16,6 +16,14 @@
     <meta property="og:type" content="お父さんフーフーしてv2.0" />
     <meta property="og:description" content="お父さんフーフーしてv2.0" />
     <!-- <link rel="stylesheet" href="common/css/style01.css" type="text/css" /> -->
+    <style type="text/css">
+
+      #moviePlayer, #pictPlayer img {
+      width: 180px;
+      height: 100px;
+      }
+
+    </style>
 </head>
 <body>
 <h1><span id="titleName"></span>FuuFuu</h1>
@@ -51,7 +59,8 @@
 <!--</div>-->
 
 <div id="showContent" class="content">
-    <img id = 'moviePlayer'src="" alt="">
+    <img id = "moviePlayer" src="test.png" alt="">
+    <div id="pictPlayer"></div>
     <div id="dummy"></div>
 </div>
 
@@ -83,6 +92,10 @@ FooFooClass.prototype = (function() {
       sortDataArr = [],
       privatePushArray = [],
       last_message = "dummy";
+      // 写真を格納する配列
+      movieArray = [];
+
+      
 
   function _keepWatch(){
     ds.on("push", function(e) {
@@ -93,15 +106,12 @@ FooFooClass.prototype = (function() {
   }
 
   function _playMovie(img_url){
-    console.log('img書き換え');
-    $("#moviePlaywer").attr("src", img_url); 
-    if(img_url){
-      var img_html = '<img src="'+ mimg_url +'" alt="" />';  
-    }else{
-      var img_html = '';
-    }
-    $("#moviePlayer").append(img_html);
-  }
+    console.log('img書き換え', img_url);
+    
+     $("#moviePlayer").attr({'src':img_url});
+      $("#pictPlayer").append('<img src="'+img_url+'" alt="" />'); 
+    
+   }
 
   // "message"データストアにメッセージをプッシュする
   function _post(titleStr, wind) {
@@ -176,15 +186,14 @@ FooFooClass.prototype = (function() {
 
   // データストアからメッセージを取ってくる
   function _dsStream() {
-
-    ds.stream().sort("desc").size(999).next(function(err, datas) {
+    ds.stream().sort("desc").size(1).next(function(err, datas) {
       // console.log('data.lengths'+ datas.length);
-      primaryId = datas.length
+      primaryId = datas.length;
       datas.forEach(function(data) {
         // callback(data.value);
-        console.log('movie start', data.value.movie);
+        // console.log('movie start', data.value.movie);
         if(data.value.movie){
-          _playMovie(data.value.movie);  
+          _playMovie(data.value.movie);
         }
         _renderMessage(data.value);
 
@@ -194,6 +203,7 @@ FooFooClass.prototype = (function() {
         // console.log(data.value);
         // console.log(data.value.content);
       });
+
     });
   }
 

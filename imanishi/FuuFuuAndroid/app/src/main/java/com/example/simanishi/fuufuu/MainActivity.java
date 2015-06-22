@@ -29,6 +29,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.physicaloid.lib.Physicaloid;
 import com.physicaloid.lib.usb.driver.uart.ReadLisener;
 
@@ -94,6 +95,12 @@ public class MainActivity extends AppCompatActivity implements IHeadphonesStateL
     int count = 0;
     private List<String> breathList;
     List<Byte> breathByteList;
+
+    //timer
+    private Handler timerHandler = new Handler();
+    private int timerCounter = 0; //timerの回数カウント
+    private int takePctNum = 7; // 撮影枚数
+    private int takepctSec = 500; //撮影秒数
 
 
     /**
@@ -167,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements IHeadphonesStateL
         }
 
         //FrameLayout
-        FrameLayout preview = (FrameLayout)findViewById(R.id.cameraPreview);
+        FrameLayout preview = (FrameLayout) findViewById(R.id.cameraPreview);
         mCamPreview = new CameraPreview(this, mCam);
         preview.addView(mCamPreview);
 
@@ -177,7 +184,11 @@ public class MainActivity extends AppCompatActivity implements IHeadphonesStateL
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     if (!mIsTake) {
                         mIsTake = true;
-                        mCam.takePicture(null, null, mPicJpgListener);
+//                        撮影メソッド
+//                        mCam.takePicture(null, null, mPicJpgListener);
+                        //撮影の繰り返し
+                        timerHandler.removeCallbacks(CallbackTimer);
+                        timerHandler.postDelayed(CallbackTimer, takepctSec);
                     }
                 }
                 return true;
@@ -187,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements IHeadphonesStateL
         // WebView
         webView = (WebView) findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(true);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
         }
         webView.addJavascriptInterface(new MyJavaScriptInterface(this), "Native");
@@ -201,10 +212,11 @@ public class MainActivity extends AppCompatActivity implements IHeadphonesStateL
                 Toast.makeText(MainActivity.this, "Url requested: " + url, Toast.LENGTH_SHORT).show();
                 return true;
             }
+
             public boolean onConsoleMessage(ConsoleMessage cm) {
                 Log.d("MyApplication", cm.message() + " -- From line "
                         + cm.lineNumber() + " of "
-                        + cm.sourceId() );
+                        + cm.sourceId());
                 return true;
             }
         });
@@ -251,6 +263,30 @@ public class MainActivity extends AppCompatActivity implements IHeadphonesStateL
     /**
      * Camera
      */
+
+    //撮影の繰り返し
+    private Runnable CallbackTimer = new Runnable() {
+        public void run() {
+            //撮影メソッド
+            mCam.takePicture(null, null, mPicJpgListener);
+            /* カウンタ値を更新 */
+            timerCounter += 1;
+            Log.d("->", String.valueOf(timerCounter));
+
+            /* 次の通知を設定 */
+            timerHandler.postDelayed(this, 1000);
+            String showStr = "撮影回数" + String.valueOf(timerCounter);
+            Toast.makeText(getApplicationContext(), showStr, Toast.LENGTH_SHORT).show();
+
+            if (timerCounter == takePctNum) {
+                /* コールバックを削除して周期処理を停止  stopNumの回数を繰り返したら*/
+                timerHandler.removeCallbacks(CallbackTimer);
+                Toast.makeText(getApplicationContext(), "撮影のストップ", Toast.LENGTH_SHORT).show();
+                timerCounter = 0;
+            }
+        }
+    };
+
     //JPEGデータ生成完了時のコールバック
     private Camera.PictureCallback mPicJpgListener = new Camera.PictureCallback() {
         public void onPictureTaken(byte[] data, Camera camera) {
@@ -274,7 +310,7 @@ public class MainActivity extends AppCompatActivity implements IHeadphonesStateL
 
             //Bitmap生成
             Bitmap smallBitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-            float scaleNum = (float)0.1;
+            float scaleNum = (float) 0.1;
             Bitmap rszBitmap = _reSizeBitmap(smallBitmap, scaleNum, scaleNum);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             rszBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
@@ -291,6 +327,7 @@ public class MainActivity extends AppCompatActivity implements IHeadphonesStateL
                 fos.close();
                 _registAndroidDB(imgPath);
                 Toast.makeText(getApplicationContext(), "写真が保存されました", Toast.LENGTH_SHORT).show();
+                //milkcocoaへ送信
                 _sendEvent(this);
             } catch (Exception e) {
                 Toast.makeText(getApplicationContext(), "保存時にエラーが発生しました", Toast.LENGTH_SHORT).show();
@@ -304,10 +341,10 @@ public class MainActivity extends AppCompatActivity implements IHeadphonesStateL
         }
     };
 
-    /** Androidのデータベースへ画像パスを登録
+    /**
+     * Androidのデータベースへ画像パスを登録
      *
      * @param path 登録パス
-     *
      */
     private void _registAndroidDB(String path) {
         ContentValues values = new ContentValues();
@@ -317,14 +354,14 @@ public class MainActivity extends AppCompatActivity implements IHeadphonesStateL
         contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
     }
 
-    /** Bitmap画像をリサイズ
+    /**
+     * Bitmap画像をリサイズ
      *
-     * @param bmp Bitmap data
+     * @param bmp  Bitmap data
      * @param rszW 拡大比率 w
      * @param rszH 拡大比率 h
-     *
      */
-    private static Bitmap _reSizeBitmap(Bitmap bmp, double rszW, double rszH){
+    private static Bitmap _reSizeBitmap(Bitmap bmp, double rszW, double rszH) {
         android.graphics.Matrix matrix = new android.graphics.Matrix();
         Bitmap bmpRsz;
         // 拡大比率
@@ -333,14 +370,14 @@ public class MainActivity extends AppCompatActivity implements IHeadphonesStateL
         // 比率をMatrixに設定
         matrix.postScale(rsz_ratio_w, rsz_ratio_h);
         // リサイズ画像
-        bmpRsz = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(),bmp.getHeight(), matrix,true);
+        bmpRsz = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
 
         return bmpRsz;
     }
 
     /**
      * Milkcocoa
-     *
+     * <p/>
      * send Data -------->
      */
     private void _connect() {
@@ -384,8 +421,8 @@ public class MainActivity extends AppCompatActivity implements IHeadphonesStateL
         String breathArray = "99,99,99,0,0,0,0,0,0,10";
         params.put("breath", breathArray);
         //動画データ
-        //String pushStr = encodedBase64;
-        //params.put("movie", pushStr);
+        String pushStr = encodedBase64;
+        params.put("movie", pushStr);
         Date date = new Date();
         params.put("date", date.getTime());
         messageDataStore.push(params);
@@ -463,17 +500,17 @@ public class MainActivity extends AppCompatActivity implements IHeadphonesStateL
         boolean existStx = false;
         int result = 0;
 
-        for(int i=0; i<buf.length; i++) {
-            if(!existStx) {
-                if(buf[i] == 's') { // 最初のsを検索
+        for (int i = 0; i < buf.length; i++) {
+            if (!existStx) {
+                if (buf[i] == 's') { // 最初のsを検索
                     existStx = true;
                 }
             } else {
-                if(buf[i] == '\r') { // 最後の ¥r までresultに取り込む
+                if (buf[i] == '\r') { // 最後の ¥r までresultに取り込む
                     return result;
                 } else {
-                    if('0' <= buf[i] && buf[i] <= '9') { // 数値情報をシフトさせながらresultに保存する
-                        result = result*10 + (buf[i]-'0'); // 文字 '0' 分を引くことでASCIIコードから数値に変換
+                    if ('0' <= buf[i] && buf[i] <= '9') { // 数値情報をシフトさせながらresultに保存する
+                        result = result * 10 + (buf[i] - '0'); // 文字 '0' 分を引くことでASCIIコードから数値に変換
                     } else {
                         return -1;
                     }
@@ -564,7 +601,7 @@ public class MainActivity extends AppCompatActivity implements IHeadphonesStateL
                     }
                     //windArray.add(wind);
                     evaluateJs(webView, "addTextNode('" + wind + "')");
-                    count ++;
+                    count++;
                 }
 
                 mSpeed.setText("" + wind);

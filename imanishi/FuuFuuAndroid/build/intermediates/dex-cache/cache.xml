@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/Users/katoTakashi/Desktop/FuuFuuAndroid/app/libs/milkcocoa-dev.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="55d0bdb7ff5ee0ef6b06342b865cf25fb8567b6b">
+        <dex dex="/Users/katoTakashi/Desktop/FuuFuuAndroid/app/build/intermediates/pre-dexed/debug/milkcocoa-dev-18b697b9654e347acb960bdd8640752a23826109.jar" />
+    </item>
+    <item
+        jar="/Users/katoTakashi/Desktop/FuuFuuAndroid/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.1.1/jars/libs/internal_impl-22.1.1.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="9e070ad32b2700b0343e8e0cccc437733d91ba3a">
+        <dex dex="/Users/katoTakashi/Desktop/FuuFuuAndroid/app/build/intermediates/pre-dexed/debug/internal_impl-22.1.1-2d72b619faf1873bd62543dfd353777c11266f2d.jar" />
+    </item>
+    <item
+        jar="/Users/katoTakashi/Desktop/FuuFuuAndroid/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.1.1/jars/classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="c95ba8152923e4872e86a82cfcba9a51c0214328">
+        <dex dex="/Users/katoTakashi/Desktop/FuuFuuAndroid/app/build/intermediates/pre-dexed/debug/classes-f4edb84c25b878cbb77126e9c03e4da9a5604dc2.jar" />
+    </item>
+    <item
+        jar="/Users/katoTakashi/Desktop/FuuFuuAndroid/app/libs/sensor_sdk.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="e279921854ca1eafb05b2dcd5cb0d704987d6442">
+        <dex dex="/Users/katoTakashi/Desktop/FuuFuuAndroid/app/build/intermediates/pre-dexed/debug/sensor_sdk-b6d548cd98eca79ea8de6c61a172babcf132fd3c.jar" />
+    </item>
+    <item
+        jar="/Users/katoTakashi/Desktop/FuuFuuAndroid/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/22.1.1/jars/classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="a3ff3c506644c820eb2bdf06e8339f72be578551">
+        <dex dex="/Users/katoTakashi/Desktop/FuuFuuAndroid/app/build/intermediates/pre-dexed/debug/classes-1b0e5b78d59fdff47006aa32aefdd6b390214a7b.jar" />
+    </item>
+    <item
+        jar="/Users/katoTakashi/Desktop/FuuFuuAndroid/app/libs/d2xx.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="549d88cce99830dc2ae951a13d5a8b897362351b">
+        <dex dex="/Users/katoTakashi/Desktop/FuuFuuAndroid/app/build/intermediates/pre-dexed/debug/d2xx-b57d629a464ad7afff8b29850b9f8f032edce6ca.jar" />
+    </item>
+    <item
+        jar="/Users/katoTakashi/Desktop/FuuFuuAndroid/app/libs/physicaloidlibrary.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="5a78534bf24bd03761034e38dd61c9320e1a3163">
+        <dex dex="/Users/katoTakashi/Desktop/FuuFuuAndroid/app/build/intermediates/pre-dexed/debug/physicaloidlibrary-81bc9089b2cbd3392e2f13a679e26e401b0ce094.jar" />
+    </item>
+    <item
+        jar="/Applications/androidx86_64/sdk/extras/android/m2repository/com/android/support/support-annotations/22.1.1/support-annotations-22.1.1.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="01d051a6bfb1218b1db2d3a5af0480ac2c25c42a">
+        <dex dex="/Users/katoTakashi/Desktop/FuuFuuAndroid/app/build/intermediates/pre-dexed/debug/support-annotations-22.1.1-c99812b198ae0cf261a1b22084e52a80f186b264.jar" />
+    </item>
+    <item
+        jar="/Users/katoTakashi/Desktop/FuuFuuAndroid/app/libs/gson-2.2.4.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="973e832af433b44c3ed11c426f2f390b29f3f3f8">
+        <dex dex="/Users/katoTakashi/Desktop/FuuFuuAndroid/app/build/intermediates/pre-dexed/debug/gson-2.2.4-5c616c49cb5e175209f1f62739184a9f2ebcfff3.jar" />
+    </item>
+
+</items>

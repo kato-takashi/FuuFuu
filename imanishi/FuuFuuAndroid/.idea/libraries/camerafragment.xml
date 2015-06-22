@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="camerafragment">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/libs/camerafragment.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

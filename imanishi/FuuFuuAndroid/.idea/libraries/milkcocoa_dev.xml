@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="milkcocoa-dev">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/libs/milkcocoa-dev.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

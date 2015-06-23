@@ -103,11 +103,15 @@ FooFooClass.prototype = (function() {
   }
 
   function _playMovie(img_url){
-    console.log('img書き換え', img_url);
-    
-     $("#moviePlayer").attr({'src':img_url});
-      $("#pictPlayer").append('<img src="'+img_url+'" alt="" />'); 
-    
+    console.log('img書き換え', img_url);        
+    // $("#moviePlayer").attr({'src':img_url});
+    $("#moviePlayer").fadeOut(function(){
+        ($("#moviePlayer").attr("src",img_url)).fadeIn();
+      });
+    // $("#pictPlayer").append('<img src="'+img_url+'" alt="" />'); 
+    $("#pictPlayer").fadeOut(function(){
+        $("#pictPlayer").append('<img src="'+img_url+'" alt="" />').fadeIn();
+      });
    }
 
   // "message"データストアにメッセージをプッシュする

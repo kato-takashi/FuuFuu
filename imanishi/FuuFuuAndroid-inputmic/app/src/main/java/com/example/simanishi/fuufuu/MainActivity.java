@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements DataStoreEventLis
     //values
     double micReachedVolume = 0.0;
     String breathArrayStr = null;
+    String pushArrayStr = null;
     int micValuePushCount = 0;
     String URL = "http://simanishi.angry.jp/chat-master/";
     List<String> breathList;
@@ -86,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements DataStoreEventLis
     Handler micHandler = new Handler();
     Handler micVolumeHanler = new Handler();
     StringBuilder micValueSb = new StringBuilder();
+    StringBuilder pushValueSb = new StringBuilder();
 
     //UIcomponents
     WebView webView;
@@ -269,7 +271,34 @@ public class MainActivity extends AppCompatActivity implements DataStoreEventLis
 
             //Base64に変換
             encodedBase64 = "data:image/jpg;base64," + Base64.encodeToString(reSizeBytes, Base64.NO_WRAP);
+//            Log.i("base64", encodedBase64);
+            Log.i("base64文字数", String.valueOf(encodedBase64.length()));
 
+            ///////////////////////////////////////
+            float scaleNum2 = (float)0.6;
+            Bitmap rszBitmap2 = _reSizeBitmap(smallBitmap, scaleNum2, scaleNum2);
+            ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
+            rszBitmap2.compress(Bitmap.CompressFormat.PNG, 100, baos2);
+            byte[] reSizeBytes2 = baos2.toByteArray();
+
+            //Base64に変換
+            String encodedBase64_2 = "data:image/jpg;base64," + Base64.encodeToString(reSizeBytes2, Base64.NO_WRAP);
+            Log.i("base64_2", encodedBase64_2);
+            Log.i("base64文字数_2", String.valueOf(encodedBase64_2.length()));
+
+            int spritNum = 3000;
+            int count = 0;
+
+            List<String> ss = StringUtils.splitAt(spritNum, encodedBase64_2);
+            for (String s : ss){
+                Log.i("base64文字数_2", String.valueOf(count)+ "終わり" + s );
+                Log.i("base64文字数_2 文字数", String.valueOf(s.length()));
+                count ++ ;
+            };
+
+
+
+            ///////////////////////////////////////
             //ファイル保存
             FileOutputStream fos;
             try {
@@ -278,7 +307,7 @@ public class MainActivity extends AppCompatActivity implements DataStoreEventLis
                 fos.close();
                 _registAndroidDB(imgPath);
                 Toast.makeText(getApplicationContext(), "写真が保存されました", Toast.LENGTH_SHORT).show();
-                camera_mc_sendEvent(this);
+//                camera_mc_sendEvent(this);
             } catch (Exception e) {
                 Toast.makeText(getApplicationContext(), "保存時にエラーが発生しました", Toast.LENGTH_SHORT).show();
             }
@@ -290,6 +319,25 @@ public class MainActivity extends AppCompatActivity implements DataStoreEventLis
 
         }
     };
+
+    /////////////文字列の分割
+    private static class StringUtils {
+        public static List<String> splitAt(int n, String s) {
+            final char[] cs = s.toCharArray();
+            List<String> ss = new ArrayList<String>();
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < cs.length; i++) {
+                sb.append(cs[i]);
+                if ((i + 1) % n != 0) continue;
+                ss.add(sb.toString());
+                sb.delete(0, sb.length());
+            }
+            ss.add(sb.toString());
+
+            return ss;
+        }
+    }
 
     /** Androidのデータベースへ画像パスを登録
      *
@@ -330,7 +378,7 @@ public class MainActivity extends AppCompatActivity implements DataStoreEventLis
      */
     private void mc_connect() {
         milkCocoa = new MilkCocoa("leadib4y5o07.mlkcca.com");
-        messageDataStore = milkCocoa.dataStore("androidCap");
+        messageDataStore = milkCocoa.dataStore("fuufuuData");
         Streaming stream = messageDataStore.streaming();
         stream.size(25);
         stream.sort("desc");
@@ -380,6 +428,27 @@ public class MainActivity extends AppCompatActivity implements DataStoreEventLis
         Toast.makeText(getApplicationContext(), "milkcocoaへ送信。", Toast.LENGTH_SHORT).show();
     }
 
+
+    private void push_mc_datastore(String breathVal, String movieVal){
+
+        //吐息データをmilkcocoaに格納
+        DataElementValue params = new DataElementValue();
+        Date date = new Date();
+
+        params.put("breath", breathVal);
+        params.put("movie", movieVal);
+        params.put("date", date.getTime());
+        Log.i("push_mc_datastore", breathVal);
+        Log.i("push_mc_datastore", movieVal);
+        messageDataStore.push(params);
+    }
+
+    private DataElementValue returnParam(String key, String arrayStr){
+        DataElementValue param = new DataElementValue();
+        param.put(key, arrayStr);
+        return param;
+    }
+
     @Override
     public void onPushed(final DataElement dataElement) {
         final DataElement pushed = dataElement;
@@ -388,7 +457,6 @@ public class MainActivity extends AppCompatActivity implements DataStoreEventLis
                 mcHandler.post(new Runnable() {
                     public void run() {
                         Toast.makeText(getApplicationContext(), "送信完了。", Toast.LENGTH_SHORT).show();
-                        Log.v("test", String.valueOf(pushed.getValue("breath")));
                         breathList = new LinkedList(Arrays.asList(pushed.getValue("breath").split(",", 0)));
 
                         byte[] breathByteArray = new byte[breathList.size()];
@@ -459,19 +527,30 @@ public class MainActivity extends AppCompatActivity implements DataStoreEventLis
         }
     }
 
-    //50秒おきにマイクの値を取得する
+    //2秒おきにマイクの値を取得する
     private class MicTimerTask extends TimerTask {
+       final int pushNum = 2;
         @Override
         public void run() {
             micHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     micValueSb.append(ft.transform(micReachedVolume));
-                    //配列が50個溜まったら(25秒経過したら)pushしてタイマー停止
-                    if (micValuePushCount >= 49) {
+                    Log.i("mic", "test: " + String.valueOf(micReachedVolume));
+
+                    //appendしたタイミングで写真を撮影
+                    if (!mIsTake) {
+                        mIsTake = true;
+                        mCam.takePicture(null, null, mPicJpgListener);
+                    }
+
+                    //配列が2個溜まったらpushしてタイマー停止
+                    if (micValuePushCount >= pushNum) {
                         breathArrayStr = new String(micValueSb);
-                        Log.v("BREATH", breathArrayStr);
-                        breath_mc_sendEvent(breathArrayStr);
+                        Log.i("breathArrayStr", breathArrayStr);
+                        //送信
+                        push_mc_datastore(breathArrayStr, encodedBase64);
+
                         micValuePushCount = 0;
                         //マイク入力の配列挿入インターバルを停止
                         micTimer.cancel();

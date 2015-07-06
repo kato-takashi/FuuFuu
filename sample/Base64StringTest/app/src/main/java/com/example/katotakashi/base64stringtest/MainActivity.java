@@ -38,11 +38,29 @@ public class MainActivity extends AppCompatActivity {
 //        image1.setImageResource(R.drawable.sky01);
 //        Bitmap bmp = ((BitmapDrawable)image1.getDrawable()).getBitmap();
 
-        colorBase64 = returnBase64(R.drawable.mori02, R.id.imageView1);
+//        colorBase64 = returnBase64(R.drawable.mori02, R.id.imageView1);
 //        monochroBase64 = returnBase64(R.drawable.sky02, R.id.imageView2);
+        Resources r = getResources();
 
-        keyArray.add(new String("第一"));
-        keyArray.add(new String("第二"));
+        //写真の変換
+        Bitmap beforeBmp = BitmapFactory.decodeResource(r, R.drawable.sky01);
+//        String base64Str = encodeTobase64(beforeBmp);
+        String base64Str = encodeTobase64(beforeBmp);
+        Log.i("before bmp", base64Str);
+
+        //配列の分割
+
+
+        //milkcocoaへ送信
+
+
+        //配列の連結
+
+
+        //デコード
+        Bitmap bmp = decodeBase64(base64Str);
+        ImageView image1 = (ImageView) findViewById(R.id.imageView1);
+        image1.setImageBitmap(bmp);
 
         List<String> ss1 = returnSpilit(splitNum, colorBase64);
 
@@ -57,7 +75,6 @@ public class MainActivity extends AppCompatActivity {
         }
         for (String s : ss1){
 //            Log.i("配列1", String.valueOf(count1) + s );
-            map.put(keyArray.get(count1), s);
 
 
         }
@@ -65,26 +82,26 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public String returnBase64(int id, int resId){
-        Resources r = getResources();
-        Bitmap bmp = BitmapFactory.decodeResource(r, id);
-
-        ImageView image1 = (ImageView) findViewById(resId);
-        image1.setImageBitmap(bmp);
-
-
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, bos);
-        byte[] reSizeBytes = bos.toByteArray();
-
-        //Base64に変換
-        String encodedBase64Color = "data:image/jpg;base64," + Base64.encodeToString(reSizeBytes, Base64.NO_WRAP);
-        Log.i("base64 mori", encodedBase64Color);
-        Log.i("base64 color", String.valueOf(encodedBase64Color.length()) + "文字");
-        int num = encodedBase64Color.length()/splitNum;
-        Log.i("base64 分割数", String.valueOf(num) + "分割");
-        return encodedBase64Color;
-    }
+//    public String returnBase64(int id, int resId){
+//        Resources r = getResources();
+//        Bitmap bmp = BitmapFactory.decodeResource(r, id);
+//
+//        ImageView image1 = (ImageView) findViewById(resId);
+//        image1.setImageBitmap(bmp);
+//
+//
+//        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//        bmp.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+//        byte[] reSizeBytes = bos.toByteArray();
+//
+//        //Base64に変換
+//        String encodedBase64Color = "data:image/jpg;base64," + Base64.encodeToString(reSizeBytes, Base64.NO_WRAP);
+//        Log.i("base64 mori", encodedBase64Color);
+//        Log.i("base64 color", String.valueOf(encodedBase64Color.length()) + "文字");
+//        int num = encodedBase64Color.length()/splitNum;
+//        Log.i("base64 分割数", String.valueOf(num) + "分割");
+//        return encodedBase64Color;
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -122,6 +139,21 @@ public class MainActivity extends AppCompatActivity {
         ss.add(sb.toString());
 
         return ss;
+    }
+
+    public static String encodeTobase64(Bitmap image) {
+        Bitmap immagex=image;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        immagex.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] b = baos.toByteArray();
+        String imageEncoded = Base64.encodeToString(b,Base64.DEFAULT);
+
+        Log.e("LOOK", imageEncoded);
+        return imageEncoded;
+    }
+    public static Bitmap decodeBase64(String input) {
+        byte[] decodedByte = Base64.decode(input, 0);
+        return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
     }
 
 }

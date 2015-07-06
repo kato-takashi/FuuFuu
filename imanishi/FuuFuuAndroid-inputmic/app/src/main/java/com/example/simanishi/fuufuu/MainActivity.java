@@ -294,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements DataStoreEventLis
                 Log.i("base64文字数_2", String.valueOf(count)+ "終わり" + s );
                 Log.i("base64文字数_2 文字数", String.valueOf(s.length()));
                 count ++ ;
-            };
+            }
 
 
 

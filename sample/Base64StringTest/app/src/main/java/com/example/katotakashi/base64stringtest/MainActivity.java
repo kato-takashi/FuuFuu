@@ -67,18 +67,18 @@ public class MainActivity extends AppCompatActivity {
 
         //配列の分割
         List<String> spilitBase64 = returnSpilit(splitNum, base64Str);
-        int arrayLength = spilitBase64.size();
-        Log.i("spilitBase64 分割数", String.valueOf(arrayLength));
+        int sendNum = spilitBase64.size();
+        Log.i("spilitBase64 分割数", String.valueOf(sendNum));
 
         //milkcocoaへ送信
-        for(int i = 0; i < arrayLength; i++){
+        for(int i = 0; i < sendNum; i++){
 //            Log.i("spilitBase64", spilitBase64.get(i));
         }
 
         //milkcocoaから取得
         ArrayList<String> getBase64 = new ArrayList<String>();
 
-        for(int i = 0; i < arrayLength; i++){
+        for(int i = 0; i < sendNum; i++){
             getBase64.add(spilitBase64.get(i));
         }
 

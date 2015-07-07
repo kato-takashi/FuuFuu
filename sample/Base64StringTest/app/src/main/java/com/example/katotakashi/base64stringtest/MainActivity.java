@@ -43,22 +43,53 @@ public class MainActivity extends AppCompatActivity {
         Resources r = getResources();
 
         //写真の変換
-        Bitmap beforeBmp = BitmapFactory.decodeResource(r, R.drawable.sky01);
-//        String base64Str = encodeTobase64(beforeBmp);
-        String base64Str = encodeTobase64(beforeBmp);
-        Log.i("before bmp", base64Str);
+        Bitmap beforeBmp = BitmapFactory.decodeResource(r, R.drawable.sky03);
+
+        //バイト配列にしたらどうか調査
+        ////////////////
+//        byte[] testByte = getBitmapAsByteArray(beforeBmp);
+//        Log.i("byteTest　配列の数", String.valueOf(testByte.length));
+//        StringBuilder sb = new StringBuilder();
+//        for(int i=0; i<testByte.length; i++){
+////            Log.i("byteTest", "バイトの中身"+String.valueOf(testByte[i]));
+//            sb.append(String.valueOf(testByte[i] + ","));
+//        }
+//        Log.i("byteTest", "文字数" + String.valueOf(sb.toString().length()) + "バイトの中身" + sb.toString());
+
+        ////////////////
+
+        //リサイズ
+        float scaleNum2 = (float)0.6;
+        Bitmap rszBitmap2 = _reSizeBitmap(beforeBmp, scaleNum2, scaleNum2);
+
+        String base64Str = encodeTobase64(rszBitmap2);
+        Log.i("spilitBase64 length", String.valueOf(base64Str.length()));
 
         //配列の分割
-
+        List<String> spilitBase64 = returnSpilit(splitNum, base64Str);
+        int arrayLength = spilitBase64.size();
+        Log.i("spilitBase64 分割数", String.valueOf(arrayLength));
 
         //milkcocoaへ送信
+        for(int i = 0; i < arrayLength; i++){
+//            Log.i("spilitBase64", spilitBase64.get(i));
+        }
 
+        //milkcocoaから取得
+        ArrayList<String> getBase64 = new ArrayList<String>();
+
+        for(int i = 0; i < arrayLength; i++){
+            getBase64.add(spilitBase64.get(i));
+        }
 
         //配列の連結
-
+        StringBuilder chainBase64 = new StringBuilder();
+        for (String str : getBase64) {
+            chainBase64.append(str);
+        }
 
         //デコード
-        Bitmap bmp = decodeBase64(base64Str);
+        Bitmap bmp = decodeBase64(chainBase64.toString());
         ImageView image1 = (ImageView) findViewById(R.id.imageView1);
         image1.setImageBitmap(bmp);
 
@@ -102,6 +133,37 @@ public class MainActivity extends AppCompatActivity {
 //        Log.i("base64 分割数", String.valueOf(num) + "分割");
 //        return encodedBase64Color;
 //    }
+
+    /** Bitmap画像をリサイズ
+     *
+     * @param bmp Bitmap data
+     * @param rszW 拡大比率 w
+     * @param rszH 拡大比率 h
+     *
+     */
+    private static Bitmap _reSizeBitmap(Bitmap bmp, double rszW, double rszH){
+        android.graphics.Matrix matrix = new android.graphics.Matrix();
+        Bitmap bmpRsz;
+        // 拡大比率
+        float rsz_ratio_w = (float) rszW;
+        float rsz_ratio_h = (float) rszH;
+        // 比率をMatrixに設定
+        matrix.postScale(rsz_ratio_w, rsz_ratio_h);
+        // リサイズ画像
+        bmpRsz = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(),bmp.getHeight(), matrix,true);
+
+        return bmpRsz;
+    }
+
+    //byte配列に格納
+    public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+        //PNG, クオリティー100としてbyte配列にデータを格納
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+
+        return byteArrayOutputStream.toByteArray();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

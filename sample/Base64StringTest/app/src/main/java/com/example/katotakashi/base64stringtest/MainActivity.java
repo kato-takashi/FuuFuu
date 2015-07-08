@@ -3,30 +3,55 @@ package com.example.katotakashi.base64stringtest;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
+
+import com.mlkcca.client.DataElement;
+import com.mlkcca.client.DataElementValue;
+import com.mlkcca.client.DataStore;
+import com.mlkcca.client.DataStoreEventListener;
+import com.mlkcca.client.MilkCocoa;
+import com.mlkcca.client.Streaming;
+import com.mlkcca.client.StreamingListener;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements DataStoreEventListener {
 
     private int count1 = 0;
     private int count2 = 0;
     private int splitNum = 3000;
-    HashMap<String,String> map = new HashMap<String,String>();
+    HashMap<String, String> map = new HashMap<String, String>();
     ArrayList<String> keyArray = new ArrayList<String>();
+    //milkcocoaから取得
+    ArrayList<String> getBase64 = new ArrayList<String>();
+    //配列の連結
+    StringBuilder chainBase64 = new StringBuilder();
+
+    //分割数
+    int sendNum = 0;
 
     private String colorBase64 = "";
-    private String monochroBase64 = "";
+
+    //milkcocoa
+    private MilkCocoa milkCocoa;
+    private DataStore messageDataStore;
+    private Handler mcHandler = new Handler();
 
 
     @Override
@@ -34,16 +59,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        ImageView image1 = (ImageView) findViewById(R.id.imageView);
-//        image1.setImageResource(R.drawable.sky01);
-//        Bitmap bmp = ((BitmapDrawable)image1.getDrawable()).getBitmap();
+        //milkcococa connect
+        mc_connect();
 
-//        colorBase64 = returnBase64(R.drawable.mori02, R.id.imageView1);
-//        monochroBase64 = returnBase64(R.drawable.sky02, R.id.imageView2);
+        Button button = (Button) findViewById(R.id.btn1);
+
+
         Resources r = getResources();
-
         //写真の変換
-        Bitmap beforeBmp = BitmapFactory.decodeResource(r, R.drawable.sky03);
+        Bitmap beforeBmp = BitmapFactory.decodeResource(r, R.drawable.sky01);
 
         //バイト配列にしたらどうか調査
         ////////////////
@@ -58,90 +82,50 @@ public class MainActivity extends AppCompatActivity {
 
         ////////////////
 
+        //モノクロ
+        //monocrome(beforeBmp);
+
         //リサイズ
-        float scaleNum2 = (float)0.6;
-        Bitmap rszBitmap2 = _reSizeBitmap(beforeBmp, scaleNum2, scaleNum2);
+        float scaleNum2 = (float) 0.35;
+        Bitmap rszBitmap2 = _reSizeBitmap(monocrome(beforeBmp), scaleNum2, scaleNum2);
 
         String base64Str = encodeTobase64(rszBitmap2);
         Log.i("spilitBase64 length", String.valueOf(base64Str.length()));
 
         //配列の分割
-        List<String> spilitBase64 = returnSpilit(splitNum, base64Str);
-        int sendNum = spilitBase64.size();
+        final List<String> spilitBase64 = returnSpilit(splitNum, base64Str);
+        sendNum = spilitBase64.size();
         Log.i("spilitBase64 分割数", String.valueOf(sendNum));
 
-        //milkcocoaへ送信
-        for(int i = 0; i < sendNum; i++){
+
+//        for(int i = 0; i < sendNum; i++){
+//            getBase64.add(spilitBase64.get(i));
+//        }
+        // ボタンがクリックされた時に呼び出されるコールバックリスナーを登録します
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // ボタンがクリックされた時に呼び出されます
+                Button button = (Button) v;
+                Toast.makeText(MainActivity.this, "onClick()",
+                        Toast.LENGTH_SHORT).show();
+                //milkcocoaへ送信
+                for (int i = 0; i < sendNum; i++) {
 //            Log.i("spilitBase64", spilitBase64.get(i));
-        }
-
-        //milkcocoaから取得
-        ArrayList<String> getBase64 = new ArrayList<String>();
-
-        for(int i = 0; i < sendNum; i++){
-            getBase64.add(spilitBase64.get(i));
-        }
-
-        //配列の連結
-        StringBuilder chainBase64 = new StringBuilder();
-        for (String str : getBase64) {
-            chainBase64.append(str);
-        }
-
-        //デコード
-        Bitmap bmp = decodeBase64(chainBase64.toString());
-        ImageView image1 = (ImageView) findViewById(R.id.imageView1);
-        image1.setImageBitmap(bmp);
-
-        List<String> ss1 = returnSpilit(splitNum, colorBase64);
-
-        for(int i = 0; i < ss1.size(); i++  ){
-//            map.put(keyArray.get(0), ss1.get(i));
-//            Log.i("map", String.valueOf(map));
-            Log.i("mori", ss1.get(i)+"終わり");
-        }
-
-        for (String key : map.keySet()) {
-//           Log.i("すべて : ", map.get(key));
-        }
-        for (String s : ss1){
-//            Log.i("配列1", String.valueOf(count1) + s );
-
-
-        }
-        count1 ++;
-
+                    push_mc_datastore(spilitBase64.get(i));
+                }
+            }
+        });
     }
 
-//    public String returnBase64(int id, int resId){
-//        Resources r = getResources();
-//        Bitmap bmp = BitmapFactory.decodeResource(r, id);
-//
-//        ImageView image1 = (ImageView) findViewById(resId);
-//        image1.setImageBitmap(bmp);
-//
-//
-//        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//        bmp.compress(Bitmap.CompressFormat.JPEG, 100, bos);
-//        byte[] reSizeBytes = bos.toByteArray();
-//
-//        //Base64に変換
-//        String encodedBase64Color = "data:image/jpg;base64," + Base64.encodeToString(reSizeBytes, Base64.NO_WRAP);
-//        Log.i("base64 mori", encodedBase64Color);
-//        Log.i("base64 color", String.valueOf(encodedBase64Color.length()) + "文字");
-//        int num = encodedBase64Color.length()/splitNum;
-//        Log.i("base64 分割数", String.valueOf(num) + "分割");
-//        return encodedBase64Color;
-//    }
-
-    /** Bitmap画像をリサイズ
+    /**
+     * Bitmap画像をリサイズ
      *
-     * @param bmp Bitmap data
+     * @param bmp  Bitmap data
      * @param rszW 拡大比率 w
      * @param rszH 拡大比率 h
-     *
      */
-    private static Bitmap _reSizeBitmap(Bitmap bmp, double rszW, double rszH){
+    private static Bitmap _reSizeBitmap(Bitmap bmp, double rszW, double rszH) {
         android.graphics.Matrix matrix = new android.graphics.Matrix();
         Bitmap bmpRsz;
         // 拡大比率
@@ -150,9 +134,31 @@ public class MainActivity extends AppCompatActivity {
         // 比率をMatrixに設定
         matrix.postScale(rsz_ratio_w, rsz_ratio_h);
         // リサイズ画像
-        bmpRsz = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(),bmp.getHeight(), matrix,true);
+        bmpRsz = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
 
         return bmpRsz;
+    }
+
+    //モノクロ処理
+    public static Bitmap monocrome(Bitmap bmp) {
+        // モノクロにする処理
+        Bitmap outBitMap = bmp.copy(Bitmap.Config.ARGB_8888, true);
+
+        int width = outBitMap.getWidth();
+        int height = outBitMap.getHeight();
+        int totalPixcel = width * height;
+
+        int i, j;
+        for (j = 0; j < height; j++) {
+            for (i = 0; i < width; i++) {
+                int pixelColor = outBitMap.getPixel(i, j);
+                int y = (int) (0.299 * Color.red(pixelColor) + 0.587 * Color.green(pixelColor) + 0.114 * Color
+                        .blue(pixelColor));
+                outBitMap.setPixel(i, j, Color.rgb(y, y, y));
+            }
+        }
+
+        return outBitMap;
     }
 
     //byte配列に格納
@@ -187,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public List<String> returnSpilit(int n, String s){
+    public List<String> returnSpilit(int n, String s) {
         final char[] cs = s.toCharArray();
         List<String> ss = new ArrayList<String>();
         StringBuilder sb = new StringBuilder();
@@ -203,20 +209,125 @@ public class MainActivity extends AppCompatActivity {
         return ss;
     }
 
+    //Base64変換
     public static String encodeTobase64(Bitmap image) {
-        Bitmap immagex=image;
+        Bitmap immagex = image;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         immagex.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] b = baos.toByteArray();
-        String imageEncoded = Base64.encodeToString(b,Base64.DEFAULT);
+        String imageEncoded = Base64.encodeToString(b, Base64.DEFAULT);
 
         Log.e("LOOK", imageEncoded);
         return imageEncoded;
     }
+
     public static Bitmap decodeBase64(String input) {
         byte[] decodedByte = Base64.decode(input, 0);
         return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
     }
+
+    /**
+     * Milkcocoa
+     */
+    private void mc_connect() {
+        milkCocoa = new MilkCocoa("leadib4y5o07.mlkcca.com");
+        messageDataStore = milkCocoa.dataStore("base64Test");
+        Streaming stream = messageDataStore.streaming();
+        stream.size(25);
+        stream.sort("asc");
+        stream.addStreamingListener(new StreamingListener() {
+            @Override
+            public void onData(ArrayList<DataElement> arg0) {
+                final ArrayList<DataElement> messages = arg0;
+                new Thread(new Runnable() {
+                    public void run() {
+                        mcHandler.post(new Runnable() {
+                            public void run() {
+                                if(sendNum >0){
+                                    for (int i = 0; i < sendNum; i++) {
+                                        Log.i("milkcocoa OK", messages.get(i).getValue("pct"));
+                                        getBase64.add(messages.get(i).getValue("pct"));
+                                    }
+                                    //配列の連結
+                                    for (String str : getBase64) {
+                                        chainBase64.append(str);
+                                    }
+                                    Log.i("合成　Base64", chainBase64.toString());
+                                    //デコード
+                                    Bitmap bmp = decodeBase64(chainBase64.toString());
+                                    ImageView image1 = (ImageView) findViewById(R.id.imageView1);
+                                    image1.setImageBitmap(bmp);
+
+                                }
+
+                            }
+                        });
+                    }
+                }).start();
+
+            }
+
+            @Override
+            public void onError(Exception e) {
+                e.printStackTrace();
+            }
+        });
+        stream.next();
+        messageDataStore.addDataStoreEventListener((DataStoreEventListener) this);
+        messageDataStore.on("push");
+    }
+
+    private void push_mc_datastore(String base64Val) {
+        //吐息データをmilkcocoaに格納
+        DataElementValue params = new DataElementValue();
+        Date date = new Date();
+
+        params.put("pct", base64Val);
+        params.put("date", date.getTime());
+        Log.i("push_mc_datastore", base64Val);
+        messageDataStore.push(params);
+    }
+
+    @Override
+    public void onPushed(DataElement dataElement) {
+        final DataElement pushed = dataElement;
+        new Thread(new Runnable() {
+            public void run() {
+                mcHandler.post(new Runnable() {
+                    public void run() {
+                        //配列の連結
+                        for (String str : getBase64) {
+                            chainBase64.append(str);
+                        }
+                        Log.i("pushされたよ", "get get get");
+                        Log.i("合成　Base64", chainBase64.toString());
+                        //デコード
+                        Bitmap bmp = decodeBase64(chainBase64.toString());
+                        ImageView image1 = (ImageView) findViewById(R.id.imageView1);
+                        image1.setImageBitmap(bmp);
+
+                    }
+                });
+            }
+        }).start();
+
+    }
+
+    @Override
+    public void onSetted(DataElement dataElement) {
+
+    }
+
+    @Override
+    public void onSended(DataElement dataElement) {
+
+    }
+
+    @Override
+    public void onRemoved(DataElement dataElement) {
+
+    }
+
 
 }
 

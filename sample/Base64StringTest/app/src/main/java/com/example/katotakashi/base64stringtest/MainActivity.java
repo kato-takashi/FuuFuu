@@ -33,9 +33,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements DataStoreEventListener {
 
-    private int count1 = 0;
-    private int count2 = 0;
-    private int splitNum = 3000;
+//    private int splitNum = 3000;
+    private int splitNum = 3;
     HashMap<String, String> map = new HashMap<String, String>();
     ArrayList<String> keyArray = new ArrayList<String>();
     //milkcocoaから取得
@@ -46,12 +45,11 @@ public class MainActivity extends AppCompatActivity implements DataStoreEventLis
     //分割数
     int sendNum = 0;
 
-    private String colorBase64 = "";
-
     //milkcocoa
     private MilkCocoa milkCocoa;
     private DataStore messageDataStore;
     private Handler mcHandler = new Handler();
+    Streaming stream;
 
 
     @Override
@@ -60,6 +58,10 @@ public class MainActivity extends AppCompatActivity implements DataStoreEventLis
         setContentView(R.layout.activity_main);
 
         //milkcococa connect
+        milkCocoa = new MilkCocoa("leadib4y5o07.mlkcca.com");
+        messageDataStore = milkCocoa.dataStore("base64Test");
+        stream = messageDataStore.streaming();
+
         mc_connect();
 
         Button button = (Button) findViewById(R.id.btn1);
@@ -89,7 +91,8 @@ public class MainActivity extends AppCompatActivity implements DataStoreEventLis
         float scaleNum2 = (float) 0.35;
         Bitmap rszBitmap2 = _reSizeBitmap(monocrome(beforeBmp), scaleNum2, scaleNum2);
 
-        String base64Str = encodeTobase64(rszBitmap2);
+//        String base64Str = encodeTobase64(rszBitmap2);
+        String base64Str = "かとうたかし加藤貴司カトウタカシ";
         Log.i("spilitBase64 length", String.valueOf(base64Str.length()));
 
         //配列の分割
@@ -230,9 +233,6 @@ public class MainActivity extends AppCompatActivity implements DataStoreEventLis
      * Milkcocoa
      */
     private void mc_connect() {
-        milkCocoa = new MilkCocoa("leadib4y5o07.mlkcca.com");
-        messageDataStore = milkCocoa.dataStore("base64Test");
-        Streaming stream = messageDataStore.streaming();
         stream.size(25);
         stream.sort("asc");
         stream.addStreamingListener(new StreamingListener() {
@@ -243,22 +243,22 @@ public class MainActivity extends AppCompatActivity implements DataStoreEventLis
                     public void run() {
                         mcHandler.post(new Runnable() {
                             public void run() {
-                                if(sendNum >0){
-                                    for (int i = 0; i < sendNum; i++) {
-                                        Log.i("milkcocoa OK", messages.get(i).getValue("pct"));
-                                        getBase64.add(messages.get(i).getValue("pct"));
-                                    }
-                                    //配列の連結
-                                    for (String str : getBase64) {
-                                        chainBase64.append(str);
-                                    }
-                                    Log.i("合成　Base64", chainBase64.toString());
-                                    //デコード
-                                    Bitmap bmp = decodeBase64(chainBase64.toString());
-                                    ImageView image1 = (ImageView) findViewById(R.id.imageView1);
-                                    image1.setImageBitmap(bmp);
-
-                                }
+//                                if(sendNum >0){
+//                                    for (int i = 0; i < sendNum; i++) {
+//                                        Log.i("milkcocoa OK", messages.get(i).getValue("pct"));
+//                                        getBase64.add(messages.get(i).getValue("pct"));
+//                                    }
+//                                    //配列の連結
+//                                    for (String str : getBase64) {
+//                                        chainBase64.append(str);
+//                                    }
+//                                    Log.i("合成　Base64", chainBase64.toString());
+//                                    //デコード
+//                                    Bitmap bmp = decodeBase64(chainBase64.toString());
+//                                    ImageView image1 = (ImageView) findViewById(R.id.imageView1);
+//                                    image1.setImageBitmap(bmp);
+//
+//                                }
 
                             }
                         });
@@ -295,16 +295,22 @@ public class MainActivity extends AppCompatActivity implements DataStoreEventLis
             public void run() {
                 mcHandler.post(new Runnable() {
                     public void run() {
-                        //配列の連結
-                        for (String str : getBase64) {
-                            chainBase64.append(str);
+
+                        Log.i("get mc", String.valueOf(pushed.getValue()));
+
+                        for (int i = 0; i < 4; i++) {
+                            Log.i("get mc for", pushed.getValue("pct"));
                         }
-                        Log.i("pushされたよ", "get get get");
-                        Log.i("合成　Base64", chainBase64.toString());
-                        //デコード
-                        Bitmap bmp = decodeBase64(chainBase64.toString());
-                        ImageView image1 = (ImageView) findViewById(R.id.imageView1);
-                        image1.setImageBitmap(bmp);
+                        //配列の連結
+//                        for (String str : getBase64) {
+//                            chainBase64.append(str);
+//                        }
+//                        Log.i("pushされたよ", "get get get");
+//                        Log.i("合成　Base64", chainBase64.toString());
+//                        //デコード
+//                        Bitmap bmp = decodeBase64(chainBase64.toString());
+//                        ImageView image1 = (ImageView) findViewById(R.id.imageView1);
+//                        image1.setImageBitmap(bmp);
 
                     }
                 });

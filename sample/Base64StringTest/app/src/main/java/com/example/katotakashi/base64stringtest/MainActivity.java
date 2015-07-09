@@ -33,8 +33,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements DataStoreEventListener {
 
-//    private int splitNum = 3000;
-    private int splitNum = 3;
+    private int splitNum = 3000;
+
     HashMap<String, String> map = new HashMap<String, String>();
     ArrayList<String> keyArray = new ArrayList<String>();
     //milkcocoaから取得
@@ -44,11 +44,13 @@ public class MainActivity extends AppCompatActivity implements DataStoreEventLis
 
     //分割数
     int sendNum = 0;
+    int sendCounter = 0;
 
     //milkcocoa
     private MilkCocoa milkCocoa;
     private DataStore messageDataStore;
     private Handler mcHandler = new Handler();
+    private Handler pushedHandler = new Handler();
     Streaming stream;
 
 
@@ -58,14 +60,13 @@ public class MainActivity extends AppCompatActivity implements DataStoreEventLis
         setContentView(R.layout.activity_main);
 
         //milkcococa connect
-        milkCocoa = new MilkCocoa("leadib4y5o07.mlkcca.com");
+        milkCocoa = new MilkCocoa("yieldibw7215z.mlkcca.com");
         messageDataStore = milkCocoa.dataStore("base64Test");
         stream = messageDataStore.streaming();
 
         mc_connect();
 
         Button button = (Button) findViewById(R.id.btn1);
-
 
         Resources r = getResources();
         //写真の変換
@@ -91,18 +92,18 @@ public class MainActivity extends AppCompatActivity implements DataStoreEventLis
         float scaleNum2 = (float) 0.35;
         Bitmap rszBitmap2 = _reSizeBitmap(monocrome(beforeBmp), scaleNum2, scaleNum2);
 
-//        String base64Str = encodeTobase64(rszBitmap2);
-        String base64Str = "かとうたかし加藤貴司カトウタカシ";
-        Log.i("spilitBase64 length", String.valueOf(base64Str.length()));
+        String base64Str = encodeTobase64(rszBitmap2);
+//        String base64Str = "かとうたかし加藤貴司カトウタカシ";
+        Log.i("splitBase64 length", String.valueOf(base64Str.length()));
 
         //配列の分割
-        final List<String> spilitBase64 = returnSpilit(splitNum, base64Str);
-        sendNum = spilitBase64.size();
-        Log.i("spilitBase64 分割数", String.valueOf(sendNum));
+        final List<String> splitBase64 = returnSpilit(splitNum, base64Str);
+        sendNum = splitBase64.size();
+        Log.i("splitBase64 分割数", String.valueOf(sendNum));
 
 
 //        for(int i = 0; i < sendNum; i++){
-//            getBase64.add(spilitBase64.get(i));
+//            getBase64.add(splitBase64.get(i));
 //        }
         // ボタンがクリックされた時に呼び出されるコールバックリスナーを登録します
         button.setOnClickListener(new View.OnClickListener() {
@@ -114,8 +115,8 @@ public class MainActivity extends AppCompatActivity implements DataStoreEventLis
                         Toast.LENGTH_SHORT).show();
                 //milkcocoaへ送信
                 for (int i = 0; i < sendNum; i++) {
-//            Log.i("spilitBase64", spilitBase64.get(i));
-                    push_mc_datastore(spilitBase64.get(i));
+//            Log.i("splitBase64", splitBase64.get(i));
+                    push_mc_datastore(splitBase64.get(i), sendNum);
                 }
             }
         });
@@ -259,12 +260,11 @@ public class MainActivity extends AppCompatActivity implements DataStoreEventLis
 //                                    image1.setImageBitmap(bmp);
 //
 //                                }
-
+                                Log.i("開始されたよ", "開始");
                             }
                         });
                     }
                 }).start();
-
             }
 
             @Override
@@ -273,34 +273,34 @@ public class MainActivity extends AppCompatActivity implements DataStoreEventLis
             }
         });
         stream.next();
-        messageDataStore.addDataStoreEventListener((DataStoreEventListener) this);
+        messageDataStore.addDataStoreEventListener(this);
         messageDataStore.on("push");
     }
 
-    private void push_mc_datastore(String base64Val) {
+    private void push_mc_datastore(String base64Val, int splitNum) {
         //吐息データをmilkcocoaに格納
         DataElementValue params = new DataElementValue();
         Date date = new Date();
 
+        params.put("spilitNum", base64Val);
         params.put("pct", base64Val);
         params.put("date", date.getTime());
-        Log.i("push_mc_datastore", base64Val);
+//        Log.i("push_mc_datastore", base64Val);
         messageDataStore.push(params);
     }
 
     @Override
     public void onPushed(DataElement dataElement) {
         final DataElement pushed = dataElement;
+
         new Thread(new Runnable() {
             public void run() {
-                mcHandler.post(new Runnable() {
+                pushedHandler.post(new Runnable() {
                     public void run() {
-
                         Log.i("get mc", String.valueOf(pushed.getValue()));
+                        Log.i("get mc for", pushed.getValue("pct"));
+                        chainBase64.append(pushed.getValue("pct"));
 
-                        for (int i = 0; i < 4; i++) {
-                            Log.i("get mc for", pushed.getValue("pct"));
-                        }
                         //配列の連結
 //                        for (String str : getBase64) {
 //                            chainBase64.append(str);
@@ -311,22 +311,32 @@ public class MainActivity extends AppCompatActivity implements DataStoreEventLis
 //                        Bitmap bmp = decodeBase64(chainBase64.toString());
 //                        ImageView image1 = (ImageView) findViewById(R.id.imageView1);
 //                        image1.setImageBitmap(bmp);
-
+                        sendCounter++;
+                        if (sendCounter == sendNum) {
+                            Log.i("get mc for chainBase64", chainBase64.toString());
+                            //デコード
+                            Bitmap bmp = decodeBase64(chainBase64.toString());
+                            ImageView image1 = (ImageView) findViewById(R.id.imageView1);
+                            image1.setImageBitmap(bmp);
+                            Log.i("get mc for", "終了");
+                            sendCounter = 0;
+                        }
                     }
                 });
             }
-        }).start();
 
+        }).start();
     }
 
     @Override
     public void onSetted(DataElement dataElement) {
+        Log.i("mc onSetted", "setted");
 
     }
 
     @Override
     public void onSended(DataElement dataElement) {
-
+        Log.i("mc onSended", "sended");
     }
 
     @Override

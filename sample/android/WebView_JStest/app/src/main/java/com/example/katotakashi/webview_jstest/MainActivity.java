@@ -16,17 +16,21 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        WebView webview = (WebView) findViewById(R.id.webView1);
-        webview.loadUrl("https://s3.amazonaws.com/fuufuu-auth/index.html");
-
-        webview.setWebChromeClient(new WebChromeClient() {
+        WebView oWebView = new WebView(getApplicationContext());
+//            oWebView.loadUrl("file:///android_asset/test.html");
+        oWebView.loadUrl("https://s3.amazonaws.com/fuufuu-auth/index.html");
+        oWebView.setWebChromeClient(new WebChromeClient() {
             public boolean onConsoleMessage(ConsoleMessage cm) {
-                Log.d("MyApplication", cm.message() + " -- From line "
+                Log.d("oWebView", cm.message() + " -- From line "
                         + cm.lineNumber() + " of "
                         + cm.sourceId());
                 return true;
             }
         });
+        oWebView.setWebChromeClient(new WebChromeClient());
+
+        setContentView(oWebView);
+        oWebView.getSettings().setJavaScriptEnabled(true);
     }
 
     @Override

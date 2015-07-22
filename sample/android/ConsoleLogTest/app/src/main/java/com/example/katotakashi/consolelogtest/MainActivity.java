@@ -20,8 +20,8 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
             WebView oWebView = new WebView(getApplicationContext());
-            oWebView.loadUrl("file:///android_asset/test.html");
-
+//            oWebView.loadUrl("file:///android_asset/test.html");
+        oWebView.loadUrl("https://s3.amazonaws.com/fuufuu-auth/index.html");
             oWebView.setWebChromeClient(new WebChromeClient() {
                 public boolean onConsoleMessage(ConsoleMessage cm) {
                     Log.d("oWebView", cm.message() + " -- From line "

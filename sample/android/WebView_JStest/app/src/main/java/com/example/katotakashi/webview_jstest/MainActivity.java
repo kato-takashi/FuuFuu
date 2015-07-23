@@ -33,7 +33,6 @@ public class MainActivity extends ActionBarActivity {
             }
         });
         oWebView.setWebChromeClient(new WebChromeClient());
-
         setContentView(oWebView);
     }
 

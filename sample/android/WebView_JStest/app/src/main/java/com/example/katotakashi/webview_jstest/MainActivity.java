@@ -1,5 +1,6 @@
 package com.example.katotakashi.webview_jstest;
 
+import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,8 +16,12 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+
+
         WebView oWebView = new WebView(getApplicationContext());
+        oWebView.getSettings().setJavaScriptEnabled(true);
+        oWebView.getSettings().setDomStorageEnabled(true);
 //            oWebView.loadUrl("file:///android_asset/test.html");
         oWebView.loadUrl("http://fuufuu-auth.s3-website-us-east-1.amazonaws.com/auth1/index.html");
         oWebView.setWebChromeClient(new WebChromeClient() {
@@ -30,7 +35,6 @@ public class MainActivity extends ActionBarActivity {
         oWebView.setWebChromeClient(new WebChromeClient());
 
         setContentView(oWebView);
-        oWebView.getSettings().setJavaScriptEnabled(true);
     }
 
     @Override

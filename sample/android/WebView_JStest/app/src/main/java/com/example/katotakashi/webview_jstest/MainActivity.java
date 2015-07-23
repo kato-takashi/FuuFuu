@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.ConsoleMessage;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
@@ -33,9 +34,26 @@ public class MainActivity extends ActionBarActivity {
             }
         });
         oWebView.setWebChromeClient(new WebChromeClient());
-
         setContentView(oWebView);
+
+        //jsの実行
+//        oWebView.addJavascriptInterface(new MyJavaScriptInterface(this), "Native");
     }
+
+    // javascript interface用のclass
+//    private class MyJavaScriptInterface {
+//        private Context context;
+//
+//        public MyJavaScriptInterface(Context context) {
+//            this.context = context;
+//        }
+//
+//        @JavascriptInterface
+//        public void hoge(String value) {
+//            Log.i("js test", value);
+//
+//        }
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

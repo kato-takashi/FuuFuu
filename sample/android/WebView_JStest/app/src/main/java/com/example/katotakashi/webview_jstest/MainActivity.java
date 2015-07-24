@@ -22,8 +22,8 @@ public class MainActivity extends ActionBarActivity {
 
         WebView oWebView = new WebView(getApplicationContext());
         oWebView.getSettings().setJavaScriptEnabled(true);
+        //milkcocoaがlocalstrageを使用しているため←これがないと動かない
         oWebView.getSettings().setDomStorageEnabled(true);
-//            oWebView.loadUrl("file:///android_asset/test.html");
         oWebView.loadUrl("http://fuufuu-auth.s3-website-us-east-1.amazonaws.com/auth1/index.html");
         oWebView.setWebChromeClient(new WebChromeClient() {
             public boolean onConsoleMessage(ConsoleMessage cm) {
@@ -36,24 +36,8 @@ public class MainActivity extends ActionBarActivity {
         oWebView.setWebChromeClient(new WebChromeClient());
         setContentView(oWebView);
 
-        //jsの実行
-//        oWebView.addJavascriptInterface(new MyJavaScriptInterface(this), "Native");
     }
 
-    // javascript interface用のclass
-//    private class MyJavaScriptInterface {
-//        private Context context;
-//
-//        public MyJavaScriptInterface(Context context) {
-//            this.context = context;
-//        }
-//
-//        @JavascriptInterface
-//        public void hoge(String value) {
-//            Log.i("js test", value);
-//
-//        }
-//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

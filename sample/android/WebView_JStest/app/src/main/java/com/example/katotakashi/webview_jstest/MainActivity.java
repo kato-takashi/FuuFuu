@@ -10,6 +10,7 @@ import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -18,14 +19,23 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-
         WebView oWebView = new WebView(getApplicationContext());
         oWebView.getSettings().setJavaScriptEnabled(true);
         //milkcocoaがlocalstrageを使用しているため←これがないと動かない
         oWebView.getSettings().setDomStorageEnabled(true);
+
+
+        //新規ウィンドウを開かない
+//        oWebView.setWebViewClient(new WebViewClient() {
+//            @Override
+//            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+//                return false;
+//            }
+//        });
+
         oWebView.loadUrl("http://fuufuu-auth.s3-website-us-east-1.amazonaws.com/auth1/index.html");
         oWebView.setWebChromeClient(new WebChromeClient() {
+
             public boolean onConsoleMessage(ConsoleMessage cm) {
                 Log.d("oWebView", cm.message() + " -- From line "
                         + cm.lineNumber() + " of "

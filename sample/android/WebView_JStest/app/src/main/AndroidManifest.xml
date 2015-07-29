@@ -3,7 +3,10 @@
     package="com.example.katotakashi.webview_jstest" >
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+<<<<<<< HEAD
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+=======
+>>>>>>> ac4e91d0d1a437abdb731dc9f9693c29309bcb3a
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
 
@@ -21,6 +24,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
+<<<<<<< HEAD
+=======
+                <data android:scheme="hyw4WhWmozhJo7fcaDIGL40QdMMr4ZSb" android:host="kato.auth0.com"/>
+
+>>>>>>> ac4e91d0d1a437abdb731dc9f9693c29309bcb3a
             </intent-filter>
         </activity>
     </application>

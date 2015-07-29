@@ -19,7 +19,10 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+<<<<<<< HEAD
 import android.widget.Toast;
+=======
+>>>>>>> ac4e91d0d1a437abdb731dc9f9693c29309bcb3a
 
 
 public class MainActivity extends Activity {
@@ -28,10 +31,15 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> ac4e91d0d1a437abdb731dc9f9693c29309bcb3a
         WebView oWebView = new WebView(getApplicationContext());
         oWebView.getSettings().setJavaScriptEnabled(true);
+        //milkcocoaがlocalstrageを使用しているため←これがないと動かない
         oWebView.getSettings().setDomStorageEnabled(true);
+<<<<<<< HEAD
 //        oWebView.getSettings().setSupportMultipleWindows(true);
         /////////
         oWebView.setWebViewClient(new WebViewClient());
@@ -52,7 +60,21 @@ public class MainActivity extends Activity {
             }
 
         });
+=======
+
+
+        //新規ウィンドウを開かない
+//        oWebView.setWebViewClient(new WebViewClient() {
+//            @Override
+//            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+//                return false;
+//            }
+//        });
+
+        oWebView.loadUrl("http://fuufuu-auth.s3-website-us-east-1.amazonaws.com/auth1/index.html");
+>>>>>>> ac4e91d0d1a437abdb731dc9f9693c29309bcb3a
         oWebView.setWebChromeClient(new WebChromeClient() {
+
             public boolean onConsoleMessage(ConsoleMessage cm) {
                 Log.d("oWebView", cm.message() + " -- From line "
                         + cm.lineNumber() + " of "
@@ -78,24 +100,8 @@ public class MainActivity extends Activity {
         setContentView(oWebView);
         oWebView.loadUrl("http://fuufuu-auth.s3-website-us-east-1.amazonaws.com/auth1/index.html");
 
-        //jsの実行
-//        oWebView.addJavascriptInterface(new MyJavaScriptInterface(this), "Native");
     }
 
-    // javascript interface用のclass
-//    private class MyJavaScriptInterface {
-//        private Context context;
-//
-//        public MyJavaScriptInterface(Context context) {
-//            this.context = context;
-//        }
-//
-//        @JavascriptInterface
-//        public void hoge(String value) {
-//            Log.i("js test", value);
-//
-//        }
-//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

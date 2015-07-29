@@ -1,30 +1,57 @@
 package com.example.katotakashi.webview_jstest;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.net.http.SslError;
+import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.ConsoleMessage;
+import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
 
-
         WebView oWebView = new WebView(getApplicationContext());
         oWebView.getSettings().setJavaScriptEnabled(true);
         oWebView.getSettings().setDomStorageEnabled(true);
+//        oWebView.getSettings().setSupportMultipleWindows(true);
+        /////////
+        oWebView.setWebViewClient(new WebViewClient());
+//        oWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+//        oWebView.getSettings().setSupportMultipleWindows(true);
+        /////////
 //            oWebView.loadUrl("file:///android_asset/test.html");
-        oWebView.loadUrl("http://fuufuu-auth.s3-website-us-east-1.amazonaws.com/auth1/index.html");
+        oWebView.setWebViewClient(new WebViewClient(){
+            @Override
+            public void onReceivedSslError (WebView view, SslErrorHandler handler, SslError error) {
+                handler.proceed();
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url){
+                view.loadUrl(url);
+                return false;
+            }
+
+        });
         oWebView.setWebChromeClient(new WebChromeClient() {
             public boolean onConsoleMessage(ConsoleMessage cm) {
                 Log.d("oWebView", cm.message() + " -- From line "
@@ -32,9 +59,24 @@ public class MainActivity extends ActionBarActivity {
                         + cm.sourceId());
                 return true;
             }
+
+            /////////////
+//            @Override
+//            public boolean onCreateWindow(WebView view, boolean dialog,
+//                                          boolean userGesture, Message resultMsg) {
+//                //この中で画面を作成する。
+//
+//                //window.openだとdialogがtrueになるかと思ったけど、そうじゃないみたい。
+//                StringBuilder sb = new StringBuilder();
+//                sb.append("dialog="+dialog);
+//                sb.append("tuserGesture="+userGesture);
+//                Log.i("window test: ", sb.toString());
+//                return false;
+//            }
+            /////////////
         });
-        oWebView.setWebChromeClient(new WebChromeClient());
         setContentView(oWebView);
+        oWebView.loadUrl("http://fuufuu-auth.s3-website-us-east-1.amazonaws.com/auth1/index.html");
 
         //jsの実行
 //        oWebView.addJavascriptInterface(new MyJavaScriptInterface(this), "Native");

@@ -6,10 +6,10 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="description" content="Fuu Fuu v2.0　吐息を届ける新しいコミュニケーション">
+    <meta name="author" content="Fuu Fuu v2.0">
 
-    <title>Landing Page - Start Bootstrap Theme</title>
+    <title>Fuu Fuu v2.0</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -32,7 +32,12 @@
 </head>
 
 <body>
-
+    <!-- youtube -->
+    <section class="big-background">
+          <a id="bgndVideo" class="player" data-property="{videoURL:'https://youtu.be/rMNOAFxmFS0',containment:'body',autoPlay:true, mute:true, startAt:0, opacity:1}"></a>
+          <div class="pattern"></div>                                            
+    </section>
+    
     <!-- Navigation -->
     <nav class="navbar navbar-default navbar-fixed-top topnav" role="navigation">
         <div class="container topnav">
@@ -72,8 +77,9 @@
         <div class="container">
 
             <div class="row">
+                <div class="pattern"></div> 
                 <div class="col-lg-12">
-                    <div class="intro-message">
+                    <div class="intro-message">                                                  
                         <h1>Fuu Fuu v2.0</h1>
                         <h3>あなたへ吐息をとどけます．</h3>
                         <hr class="intro-divider">
@@ -121,9 +127,9 @@
 
     <div class="content-section-b">
 
-        <div class="container">
-
+        <div class="container"> 
             <div class="row">
+                <div class="pattern"></div>
                 <div class="col-lg-5 col-lg-offset-1 col-sm-push-6  col-sm-6">
                     <hr class="section-heading-spacer">
                     <div class="clearfix"></div>
@@ -142,9 +148,7 @@
     <!-- /.content-section-b -->
 
     <div class="content-section-a">
-
         <div class="container">
-
             <div class="row">
                 <div class="col-lg-5 col-sm-6">
                     <hr class="section-heading-spacer">
@@ -165,7 +169,6 @@
 
 	<a  name="contact"></a>
     <div class="banner">
-
         <div class="container">
 
             <div class="row">
@@ -218,11 +221,30 @@
         </div>
     </footer>
 
+    
+     
+      <!-- <div class="wrapper">
+        <section class="about-section">
+          <div class="about-section-container">
+            中央の白ベタ背景のコンテンツ
+          </div>
+        </section>
+        <section class="small-background-section">
+          <div class="pattern"></div>
+          <div class="small-background-container">
+            一番下のコンテンツ
+          </div>
+        </section>
+      </div> -->
+
     <!-- jQuery -->
     <script src="js/jquery.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
     <script src="js/bootstrap.min.js"></script>
+    <!-- youtube -->
+    <script src="js/jquery.mb.YTPlayer.js"></script>
+    <script src="js/main.js"></script>
 
 
 </body>

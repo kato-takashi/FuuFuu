@@ -24,8 +24,8 @@
   -->
 
 <resources>
-    <string name="auth0_client_id">YOUR_CLIENT_ID</string>
-    <string name="auth0_scheme">a0your_client_id</string>
-    <string name="auth0_domain">YOUR_NAMESPACE</string>
-    <string name="facebook_app_id">696506353719958</string>
+    <string name="auth0_client_id">Laj0lprZpXzUXGUaHRYSPc0Ff9w732Oz</string>
+    <string name="auth0_scheme">a0Laj0lprZpXzUXGUaHRYSPc0Ff9w732Oz</string>
+    <string name="auth0_domain">kato.auth0.com</string>
+    <string name="facebook_app_id">814374012003028</string>
 </resources>

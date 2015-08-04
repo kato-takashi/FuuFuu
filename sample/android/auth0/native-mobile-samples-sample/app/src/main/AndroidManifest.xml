@@ -52,31 +52,27 @@
             android:theme="@style/Lock.Theme" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data
                     android:host="@string/auth0_domain"
                     android:scheme="@string/auth0_scheme" />
             </intent-filter>
         </activity>
 
-        <meta-data
-            android:name="com.auth0.lock.client-id"
-            android:value="@string/auth0_client_id" />
-        <meta-data
-            android:name="com.auth0.lock.domain-url"
-            android:value="@string/auth0_domain" />
+        <meta-data android:name="com.auth0.lock.client-id" android:value="Laj0lprZpXzUXGUaHRYSPc0Ff9w732Oz"/>
+        <meta-data android:name="com.auth0.lock.domain-url" android:value="kato.auth0.com"/>
+
         <!-- Auth0 Lock End -->
 
 
         <!-- Facebook Native -->
-        <activity android:name="com.facebook.LoginActivity" />
-
-        <meta-data
-            android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id" />
+        <activity android:name="com.facebook.FacebookActivity"
+            android:configChanges=
+                "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:label="@string/app_name" />
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
         <!-- Facebook Native End -->
 
         <activity
